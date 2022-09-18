@@ -1,0 +1,60 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+_global_script_classes=[{
+"base": "Node",
+"class": &"FiniteStackMachine",
+"language": &"GDScript",
+"path": "res://finite_stack_machine/FiniteStackMachine.gd"
+}, {
+"base": "Node2D",
+"class": &"RegionCell",
+"language": &"GDScript",
+"path": "res://wrsm/region_cell/RegionCell.gd"
+}, {
+"base": "Node2D",
+"class": &"RegionChanger",
+"language": &"GDScript",
+"path": "res://wrsm/region_changer/RegionChanger.gd"
+}, {
+"base": "Node2D",
+"class": &"RegionMap",
+"language": &"GDScript",
+"path": "res://wrsm/world_region/RegionMap.gd"
+}, {
+"base": "Node",
+"class": &"StateMachine",
+"language": &"GDScript",
+"path": "res://finite_state_machine/StateMachine.gd"
+}]
+_global_script_class_icons={
+"FiniteStackMachine": "",
+"RegionCell": "",
+"RegionChanger": "",
+"RegionMap": "",
+"StateMachine": ""
+}
+
+[application]
+
+config/name="Common_Modules"
+run/main_scene="res://TestConsole.tscn"
+config/features=PackedStringArray("4.0", "Vulkan Clustered")
+config/icon="res://icon.svg"
+
+[autoload]
+
+Utils="*res://autoloads/Utils.gd"
+WorldRegion="*res://wrsm/autoload/WorldRegion.gd"
+
+[layer_names]
+
+2d_physics/layer_1="World"
+2d_physics/layer_2="Player"

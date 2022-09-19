@@ -9,6 +9,16 @@
 config_version=5
 
 _global_script_classes=[{
+"base": "Marker2D",
+"class": &"CameraLimit",
+"language": &"GDScript",
+"path": "res://wrsm/region_cell/utils/CameraLimit.gd"
+}, {
+"base": "Marker2D",
+"class": &"CameraTarget",
+"language": &"GDScript",
+"path": "res://wrsm/region_cell/utils/CameraTarget.gd"
+}, {
 "base": "Node",
 "class": &"FiniteStackMachine",
 "language": &"GDScript",
@@ -19,6 +29,11 @@ _global_script_classes=[{
 "language": &"GDScript",
 "path": "res://wrsm/region_cell/RegionCell.gd"
 }, {
+"base": "Area2D",
+"class": &"RegionCellDetector",
+"language": &"GDScript",
+"path": "res://wrsm/region_cell/utils/RegionCellDetector.gd"
+}, {
 "base": "Node2D",
 "class": &"RegionChanger",
 "language": &"GDScript",
@@ -27,7 +42,7 @@ _global_script_classes=[{
 "base": "Node2D",
 "class": &"RegionMap",
 "language": &"GDScript",
-"path": "res://wrsm/world_region/RegionMap.gd"
+"path": "res://wrsm/region_map/RegionMap.gd"
 }, {
 "base": "Node",
 "class": &"StateMachine",
@@ -35,8 +50,11 @@ _global_script_classes=[{
 "path": "res://finite_state_machine/StateMachine.gd"
 }]
 _global_script_class_icons={
+"CameraLimit": "",
+"CameraTarget": "",
 "FiniteStackMachine": "",
 "RegionCell": "",
+"RegionCellDetector": "",
 "RegionChanger": "",
 "RegionMap": "",
 "StateMachine": ""
@@ -54,7 +72,13 @@ config/icon="res://icon.svg"
 Utils="*res://autoloads/Utils.gd"
 WorldRegion="*res://wrsm/autoload/WorldRegion.gd"
 
+[display]
+
+window/size/viewport_width=256
+window/size/viewport_height=144
+
 [layer_names]
 
 2d_physics/layer_1="World"
 2d_physics/layer_2="Player"
+2d_physics/layer_32="RegionCell"

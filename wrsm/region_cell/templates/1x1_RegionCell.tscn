@@ -1,0 +1,46 @@
+[gd_scene load_steps=5 format=3 uid="uid://bksqt363oy7dx"]
+
+[ext_resource type="PackedScene" uid="uid://dgpcruipwb8fa" path="res://wrsm/region_cell/RegionCell.tscn" id="1_hvdq2"]
+[ext_resource type="PackedScene" uid="uid://d0b5mnp0xwpyf" path="res://wrsm/region_cell/utils/CameraTarget.tscn" id="2_yha22"]
+[ext_resource type="PackedScene" uid="uid://bya3chfjkuejv" path="res://wrsm/region_cell/utils/RegionCellDetector.tscn" id="3_jq8h1"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_viu4a"]
+size = Vector2(240, 128)
+
+[node name="1x1_RegionCell" instance=ExtResource("1_hvdq2")]
+
+[node name="Utils" parent="." index="0"]
+visible = false
+
+[node name="TopLimit" parent="Utils/CameraLimits" index="0"]
+position = Vector2(256, 0)
+
+[node name="BottomLimit" parent="Utils/CameraLimits" index="1"]
+position = Vector2(0, 144)
+
+[node name="LeftLimit" parent="Utils/CameraLimits" index="2"]
+position = Vector2(0, 144)
+
+[node name="RightLimit" parent="Utils/CameraLimits" index="3"]
+position = Vector2(256, 0)
+
+[node name="CameraLimit" parent="Utils/CameraTargets" index="0" instance=ExtResource("2_yha22")]
+position = Vector2(128, 72)
+
+[node name="PlayerDetector" parent="Utils" index="2"]
+position = Vector2(128, 72)
+
+[node name="CollisionShape2d" parent="Utils/PlayerDetector" index="0"]
+shape = SubResource("RectangleShape2D_viu4a")
+
+[node name="RegionCellDetector" parent="Utils/RegionCellDetectorContainer" index="0" instance=ExtResource("3_jq8h1")]
+position = Vector2(128, 0)
+
+[node name="RegionCellDetector2" parent="Utils/RegionCellDetectorContainer" index="1" instance=ExtResource("3_jq8h1")]
+position = Vector2(128, 144)
+
+[node name="RegionCellDetector3" parent="Utils/RegionCellDetectorContainer" index="2" instance=ExtResource("3_jq8h1")]
+position = Vector2(0, 72)
+
+[node name="RegionCellDetector4" parent="Utils/RegionCellDetectorContainer" index="3" instance=ExtResource("3_jq8h1")]
+position = Vector2(256, 72)

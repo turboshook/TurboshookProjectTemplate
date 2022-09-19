@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://b5mqo8i2yhew7"]
+
+[ext_resource type="PackedScene" uid="uid://bksqt363oy7dx" path="res://wrsm/region_cell/templates/1x1_RegionCell.tscn" id="1_ua5s5"]
+[ext_resource type="Texture2D" uid="uid://b2tlwp6vd085l" path="res://icon.svg" id="2_2uqg3"]
+
+[node name="TestRegion_Room1" instance=ExtResource("1_ua5s5")]
+
+[node name="Icon" type="Sprite2D" parent="." index="4"]
+position = Vector2(200, 71)
+texture = ExtResource("2_2uqg3")

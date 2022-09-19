@@ -1,6 +1,44 @@
-[gd_scene load_steps=2 format=3 uid="uid://dgpcruipwb8fa"]
+[gd_scene load_steps=3 format=3 uid="uid://dgpcruipwb8fa"]
 
 [ext_resource type="Script" path="res://wrsm/region_cell/RegionCell.gd" id="1_c568x"]
+[ext_resource type="PackedScene" uid="uid://buoar2jal5ne0" path="res://wrsm/region_cell/utils/CameraLimit.tscn" id="2_ab0dg"]
 
 [node name="RegionCell" type="Node2D"]
 script = ExtResource("1_c568x")
+
+[node name="Utils" type="Node2D" parent="."]
+metadata/_edit_lock_ = true
+
+[node name="CameraLimits" type="Node2D" parent="Utils"]
+metadata/_edit_lock_ = true
+
+[node name="TopLimit" parent="Utils/CameraLimits" instance=ExtResource("2_ab0dg")]
+
+[node name="BottomLimit" parent="Utils/CameraLimits" instance=ExtResource("2_ab0dg")]
+
+[node name="LeftLimit" parent="Utils/CameraLimits" instance=ExtResource("2_ab0dg")]
+
+[node name="RightLimit" parent="Utils/CameraLimits" instance=ExtResource("2_ab0dg")]
+
+[node name="CameraTargets" type="Node2D" parent="Utils"]
+metadata/_edit_lock_ = true
+
+[node name="PlayerDetector" type="Area2D" parent="Utils"]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2d" type="CollisionShape2D" parent="Utils/PlayerDetector"]
+
+[node name="RegionCellDetectorContainer" type="Node2D" parent="Utils"]
+metadata/_edit_lock_ = true
+
+[node name="RegionChangers" type="Node2D" parent="."]
+
+[node name="Interactables" type="Node2D" parent="."]
+metadata/_edit_lock_ = true
+
+[node name="Items" type="Node2D" parent="."]
+metadata/_edit_lock_ = true
+
+[node name="Enemies" type="Node2D" parent="."]
+metadata/_edit_lock_ = true

@@ -11,7 +11,7 @@ var Player: CharacterBody2D = null
 var WorldRegionReference = ResourceLoader.load("res://game_files/utils/WorldRegionReference.tres")
 
 func _ready() -> void:
-	WorldRegionReference.WorldCameraInstance = self
+	WorldRegionReference.WorldCamera = self
 	Player = WorldRegionReference.Player
 	#PositionTween = create_tween()
 

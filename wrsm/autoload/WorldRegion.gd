@@ -31,13 +31,16 @@ func update_region(new_region_cell: RegionCell) -> void:
 	region_data = world_data[region_key]["region_data"]
 
 func get_world_data_path() -> String:
-	# https://godotengine.org/qa/65885/relative-paths-available-resourceloader-load-like-preload
 	var final_path: String
+	final_path = get_module_path() + "/world_data/world_data.json"
+	return final_path
+
+func get_module_path() -> String:
+	# https://godotengine.org/qa/65885/relative-paths-available-resourceloader-load-like-preload
 	var parent_dir: String = get_script().resource_path.get_base_dir()
 	var last_forward_slash_index: int = parent_dir.rfindn("/")
 	var module_root_dir: String = parent_dir.left(last_forward_slash_index)
-	final_path = module_root_dir + "/world_data/world_data.json"
-	return final_path
+	return module_root_dir
 
 func get_world_data() -> Dictionary:
 	var mapping: Dictionary

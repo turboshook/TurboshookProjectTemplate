@@ -10,10 +10,13 @@ var empty_spawn_positions: Array
 var region_key: String
 var active = false
 
+var WorldReference: Resource
+
 func _ready() -> void:
-	if not WorldRegion.is_initialized():
-		await WorldRegion.initialize_complete
+	#if not WorldRegion.is_initialized():
+	#	await WorldRegion.initialize_complete
 	region_key = get_region_key()
+	WorldReference = ResourceLoader.load(WorldRegion.get_world_reference_path())
 
 func get_region_key() -> String:
 	return str(name).rsplit("_", false, 1)[0]
@@ -42,19 +45,19 @@ func get_adjacent_cells() -> Dictionary:
 	return adjacent_cells
 
 # when the player enters a new area, that area connects to the main camera
-func _on_PlayerDetector_body_entered(body):
+func _on_player_detector_body_entered(body):
 	if not active:
-		if not WorldRegion.WorldCamera.is_connected("cell_change_complete", Callable(self, "_on_cell_change_complete")):
-			WorldRegion.WorldCamera.connect("cell_change_complete", Callable(self, "_on_cell_change_complete"))
+		if not WorldReference.WorldCamera.is_connected("cell_change_complete", Callable(self, "_on_cell_change_complete")):
+			WorldReference.WorldCamera.connect("cell_change_complete", Callable(self, "_on_cell_change_complete"))
 		var new_camera_target = get_new_camera_target(body.global_position)
-		WorldRegion.WorldCamera.change_cell(new_camera_target)
+		WorldReference.WorldCamera.change_cell(new_camera_target)
 
 # when the player leaves a given area, that area disconnects from the main camera
-func _on_PlayerDetector_body_exited(_body):
-	if WorldRegion.WorldCamera.is_connected("cell_change_complete", Callable(self, "_on_cell_change_complete")):
-		WorldRegion.WorldCamera.disconnect("cell_change_complete", Callable(self, "_on_cell_change_complete"))
-	if not WorldRegion.WorldCamera.is_connected("cell_change_started", Callable(self, "_on_cell_change_started")):
-		WorldRegion.WorldCamera.connect("cell_change_started", Callable(self, "_on_cell_change_started"))
+func _on_player_detector_body_exited(body):
+	if WorldReference.WorldCamera.is_connected("cell_change_complete", Callable(self, "_on_cell_change_complete")):
+		WorldReference.WorldCamera.disconnect("cell_change_complete", Callable(self, "_on_cell_change_complete"))
+	if not WorldReference.WorldCamera.is_connected("cell_change_started", Callable(self, "_on_cell_change_started")):
+		WorldReference.WorldCamera.connect("cell_change_started", Callable(self, "_on_cell_change_started"))
 
 func get_new_camera_target(player_origin) -> Vector2:
 	var closest_node = null
@@ -69,13 +72,13 @@ func _on_cell_change_complete() -> void:
 	_activate() 
 
 func _on_cell_change_started() -> void:
-	WorldRegion.WorldCamera.disconnect("cell_change_started", Callable(self, "_on_cell_change_started"))
+	WorldReference.WorldCamera.disconnect("cell_change_started", Callable(self, "_on_cell_change_started"))
 	_deactivate()
 
 func _activate() -> void:
 	active = true
 	_add_adjacent_cells()
-	WorldRegion.WorldCamera.set_camera_limits(CameraLimits.get_children())
+	WorldReference.WorldCamera.set_camera_limits(CameraLimits.get_children())
 
 func _add_adjacent_cells() -> void:
 	var this_cell_mapping: Dictionary = WorldRegion.cell_mapping[name] # location of current RegionCell in RegionMapping
@@ -85,7 +88,7 @@ func _add_adjacent_cells() -> void:
 		var last_forward_slash_index: int = adjacent_cell_filepath.rfindn("/") + 1
 		var new_area_name: String = (adjacent_cell_filepath.substr(last_forward_slash_index, -1)) # remove_at filepath
 		new_area_name = new_area_name.left(new_area_name.length() - 5) # remove_at super.tscn extension
-		adjacent_area_names.append(new_area_name)
+		adjacent_area_names.append(StringName(new_area_name)) # cast to StringName to avoid issues with comparing area names in _free_distant_cells()
 		if not get_parent().has_node(new_area_name):
 			# warning-ignore:return_value_discarded
 			WorldRegion.instance_cell_in_region(load(adjacent_cell_filepath), global_position + value)
@@ -105,6 +108,9 @@ func get_class() -> String:
 
 func is_class(test_class: String) -> bool:
 	return test_class == get_class()
+
+
+
 
 
 

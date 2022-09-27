@@ -10,13 +10,13 @@ var region_data: Dictionary
 var initialized: bool = false # used just for that first RegionCell check checked _ready()
 signal initialize_complete
 
-var WorldScene: Node2D
-var WorldCamera: Camera2D
+var WorldReference: Resource
 
 func initialize() -> void:
 	world_data_path = get_world_data_path()
 	world_data = get_world_data()
-	region_key = WorldScene.LoadedRegionCells.get_child(0).get_region_key() # ONLY ONE RegionCell can be instanced in LoadedRegionCells on startup, or this breaks. Cannot think of workaround for now.
+	WorldReference = ResourceLoader.load(WorldRegion.get_world_reference_path())
+	region_key = WorldReference.LoadedRegionCells.get_child(0).get_region_key() # ONLY ONE RegionCell can be instanced in LoadedRegionCells on startup, or this breaks. Cannot think of workaround for now.
 	cell_mapping = world_data[region_key]["region_cell_mapping"]
 	region_data = world_data[region_key]["region_data"]
 	initialized = true
@@ -30,17 +30,20 @@ func update_region(new_region_cell: RegionCell) -> void:
 	cell_mapping = world_data[region_key]["region_cell_mapping"]
 	region_data = world_data[region_key]["region_data"]
 
-func get_world_data_path() -> String:
-	var final_path: String
-	final_path = get_module_path() + "/world_data/world_data.json"
-	return final_path
-
 func get_module_path() -> String:
 	# https://godotengine.org/qa/65885/relative-paths-available-resourceloader-load-like-preload
 	var parent_dir: String = get_script().resource_path.get_base_dir()
 	var last_forward_slash_index: int = parent_dir.rfindn("/")
 	var module_root_dir: String = parent_dir.left(last_forward_slash_index)
 	return module_root_dir
+
+func get_world_reference_path() -> String:
+	return get_module_path() + "/world_reference/WorldReference.tres"
+
+func get_world_data_path() -> String:
+	var final_path: String
+	final_path = get_module_path() + "/world_data/world_data.json"
+	return final_path
 
 func get_world_data() -> Dictionary:
 	var mapping: Dictionary
@@ -54,15 +57,15 @@ func get_world_data() -> Dictionary:
 	return mapping
 
 func instance_cell_in_region(cell_packed: PackedScene, target_position: Vector2) -> RegionCell:
-	if WorldScene.LoadedRegionCells == null:
+	if WorldReference.LoadedRegionCells == null:
 		return null
 	var cell_instance: RegionCell = cell_packed.instantiate()
-	WorldScene.LoadedRegionCells.call_deferred("add_child", cell_instance)
+	WorldReference.LoadedRegionCells.call_deferred("add_child", cell_instance)
 	cell_instance.global_position = target_position
 	return cell_instance
 
 func clear_loaded_cells() -> void:
-	for child in WorldScene.LoadedRegionCells.get_children():
+	for child in WorldReference.LoadedRegionCells.get_children():
 		child.queue_free()
 
 func change_region(target_cell_path: String, target_cell_position: Vector2, target_region_changer_id: int) -> void:
@@ -71,5 +74,5 @@ func change_region(target_cell_path: String, target_cell_position: Vector2, targ
 	await target_cell_instance.ready # because we have to instance RegionCells in the above call using call_deferred()
 	var target_region_changer: RegionChanger = target_cell_instance.get_corresponding_region_changer(target_region_changer_id)
 	var player_spawn_position: Vector2 = target_region_changer.get_player_spawn_position()
-	WorldScene.PlayerContainer.get_child(0).global_position = player_spawn_position 
+	WorldReference.Player.global_position = player_spawn_position 
 	WorldRegion.update_region(target_cell_instance)

@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://c5sn3o0wshqwo"]
+
+[ext_resource type="Script" path="res://game_files/finite_stack_machine/FiniteStackMachine.gd" id="1_7qr54"]
+
+[node name="FiniteStackMachine" type="Node"]
+script = ExtResource("1_7qr54")

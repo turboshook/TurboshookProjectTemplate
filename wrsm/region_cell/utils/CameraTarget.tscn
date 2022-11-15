@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://d0b5mnp0xwpyf"]
-
-[ext_resource type="Script" path="res://wrsm/region_cell/utils/CameraTarget.gd" id="1_8l2v3"]
-
-[node name="CameraLimit" type="Marker2D"]
-script = ExtResource("1_8l2v3")

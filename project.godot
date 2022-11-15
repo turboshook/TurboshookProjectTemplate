@@ -12,42 +12,42 @@ _global_script_classes=[{
 "base": "Marker2D",
 "class": &"CameraLimit",
 "language": &"GDScript",
-"path": "res://wrsm/region_cell/utils/CameraLimit.gd"
+"path": "res://game_files/wrsm/region_cell/utils/CameraLimit.gd"
 }, {
 "base": "Marker2D",
 "class": &"CameraTarget",
 "language": &"GDScript",
-"path": "res://wrsm/region_cell/utils/CameraTarget.gd"
+"path": "res://game_files/wrsm/region_cell/utils/CameraTarget.gd"
 }, {
 "base": "Node",
 "class": &"FiniteStackMachine",
 "language": &"GDScript",
-"path": "res://finite_stack_machine/FiniteStackMachine.gd"
+"path": "res://game_files/finite_stack_machine/FiniteStackMachine.gd"
 }, {
 "base": "Node2D",
 "class": &"RegionCell",
 "language": &"GDScript",
-"path": "res://wrsm/region_cell/RegionCell.gd"
+"path": "res://game_files/wrsm/region_cell/RegionCell.gd"
 }, {
 "base": "Area2D",
 "class": &"RegionCellDetector",
 "language": &"GDScript",
-"path": "res://wrsm/region_cell/utils/RegionCellDetector.gd"
+"path": "res://game_files/wrsm/region_cell/utils/RegionCellDetector.gd"
 }, {
 "base": "Node2D",
 "class": &"RegionChanger",
 "language": &"GDScript",
-"path": "res://wrsm/region_changer/RegionChanger.gd"
+"path": "res://game_files/wrsm/region_changer/RegionChanger.gd"
 }, {
 "base": "Node2D",
 "class": &"RegionMap",
 "language": &"GDScript",
-"path": "res://wrsm/region_map/RegionMap.gd"
+"path": "res://game_files/wrsm/region_map/RegionMap.gd"
 }, {
 "base": "Node",
 "class": &"StateMachine",
 "language": &"GDScript",
-"path": "res://finite_state_machine/StateMachine.gd"
+"path": "res://game_files/finite_state_machine/StateMachine.gd"
 }]
 _global_script_class_icons={
 "CameraLimit": "",
@@ -62,15 +62,14 @@ _global_script_class_icons={
 
 [application]
 
-config/name="Common_Modules"
-run/main_scene="res://TestConsole.tscn"
-config/features=PackedStringArray("4.0", "Vulkan Clustered")
+config/name="2DProjectTemplate"
+config/features=PackedStringArray("4.0")
 config/icon="res://icon.svg"
 
 [autoload]
 
-Utils="*res://autoloads/Utils.gd"
-WorldRegion="*res://wrsm/autoload/WorldRegion.gd"
+Utils="*res://game_files/autoloads/Utils.gd"
+WorldRegion="*res://game_files/wrsm/autoload/WorldRegion.gd"
 
 [display]
 

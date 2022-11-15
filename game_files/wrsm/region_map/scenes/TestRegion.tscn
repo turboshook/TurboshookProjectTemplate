@@ -1,0 +1,20 @@
+[gd_scene load_steps=6 format=3 uid="uid://djipk34youymf"]
+
+[ext_resource type="PackedScene" uid="uid://d2ea4f8s5en1r" path="res://game_files/wrsm/region_map/RegionMap.tscn" id="1_txwyl"]
+[ext_resource type="PackedScene" uid="uid://c80nf5ktc608t" path="res://game_files/wrsm/region_cell/scenes/testregion/TestRegion_Room0.tscn" id="2_gm5ma"]
+[ext_resource type="PackedScene" uid="uid://7718ykpdw8bk" path="res://game_files/wrsm/region_cell/scenes/testregion/TestRegion_Room1.tscn" id="3_q8wux"]
+[ext_resource type="PackedScene" uid="uid://djetim7bwq5t8" path="res://game_files/wrsm/region_cell/scenes/testregion/TestRegion_Room2.tscn" id="4_ei0eh"]
+[ext_resource type="PackedScene" uid="uid://bfgfyk34bvnis" path="res://game_files/wrsm/region_cell/scenes/testregion/TestRegion_TestRoom.tscn" id="5_jkwb5"]
+
+[node name="TestRegion" instance=ExtResource("1_txwyl")]
+
+[node name="TestRegion_Room0" parent="." index="0" instance=ExtResource("2_gm5ma")]
+
+[node name="TestRegion_Room1" parent="." index="1" instance=ExtResource("3_q8wux")]
+position = Vector2(256, 0)
+
+[node name="TestRegion_Room2" parent="." index="2" instance=ExtResource("4_ei0eh")]
+position = Vector2(512, 0)
+
+[node name="TestRegion_TestRoom" parent="." index="3" instance=ExtResource("5_jkwb5")]
+position = Vector2(0, 288)

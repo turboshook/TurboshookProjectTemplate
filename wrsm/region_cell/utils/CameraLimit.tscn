@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://buoar2jal5ne0"]
-
-[ext_resource type="Script" path="res://wrsm/region_cell/utils/CameraLimit.gd" id="1_weojm"]
-
-[node name="CameraLimit" type="Marker2D"]
-script = ExtResource("1_weojm")

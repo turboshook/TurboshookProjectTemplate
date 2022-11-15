@@ -1,9 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://bhbvuvoo5fbod"]
-
-[ext_resource type="PackedScene" uid="uid://bm6bkklf63r66" path="res://root_scene/TransitionLayer.tscn" id="1_26jhw"]
-
-[node name="Game" type="Node"]
-
-[node name="TransitionLayer" parent="." instance=ExtResource("1_26jhw")]
-
-[node name="ActiveSceneContainer" type="Node" parent="."]

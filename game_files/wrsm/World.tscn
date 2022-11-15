@@ -1,10 +1,7 @@
-[gd_scene load_steps=6 format=3 uid="uid://cdlrvkhexnngh"]
+[gd_scene load_steps=3 format=3 uid="uid://cdlrvkhexnngh"]
 
 [ext_resource type="Script" path="res://game_files/wrsm/World.gd" id="1_yy1d5"]
 [ext_resource type="PackedScene" uid="uid://dhr36f7nqme2b" path="res://game_files/wrsm/world_camera/WorldCamera.tscn" id="2_2dijn"]
-[ext_resource type="PackedScene" uid="uid://7718ykpdw8bk" path="res://game_files/wrsm/region_cell/scenes/testregion/TestRegion_Room1.tscn" id="2_phetn"]
-[ext_resource type="PackedScene" uid="uid://4gyaafgi368n" path="res://game_files/player/Player.tscn" id="3_88r7v"]
-[ext_resource type="PackedScene" uid="uid://b53h0bkqjfcqv" path="res://game_files/hud/HUD.tscn" id="5_hxg1p"]
 
 [node name="World" type="Node2D"]
 script = ExtResource("1_yy1d5")
@@ -12,14 +9,7 @@ script = ExtResource("1_yy1d5")
 [node name="LoadedRegionCells" type="Node2D" parent="."]
 metadata/_edit_lock_ = true
 
-[node name="TestRegion_Room1" parent="LoadedRegionCells" instance=ExtResource("2_phetn")]
-
 [node name="PlayerContainer" type="Node2D" parent="."]
 metadata/_edit_lock_ = true
 
-[node name="Player" parent="PlayerContainer" instance=ExtResource("3_88r7v")]
-position = Vector2(24, 96)
-
 [node name="WorldCamera" parent="." instance=ExtResource("2_2dijn")]
-
-[node name="HUD" parent="." instance=ExtResource("5_hxg1p")]

@@ -1,4 +1,5 @@
 extends Resource
+class_name WRSMNodeReferences
 
 signal world_ready
 signal player_ready
@@ -20,7 +21,7 @@ var Player: CharacterBody2D = null:
 		Player = mod_value
 		player_ready.emit()
 
-var WorldCamera: Camera2D = null:
+var WorldCamera: WorldCamera = null:
 	get:
 		return WorldCamera
 	set(mod_value):

@@ -10,18 +10,19 @@ var region_data: Dictionary
 var initialized: bool = false # used just for that first RegionCell check checked _ready()
 signal initialize_complete
 
-var NodeReferences: Resource
+var NodeReferences: WRSMNodeReferences
 
 func _ready() -> void:
 	world_data_path = get_world_data_path()
 	world_data = get_world_data()
-	NodeReferences = ResourceLoader.load(WorldRegion.get_node_references_path())
+	NodeReferences = ResourceLoader.load(get_node_references_path())
 
 func initialize() -> void:
 	region_key = NodeReferences.LoadedRegionCells.get_child(0).get_region_key() # ONLY ONE RegionCell can be instanced in LoadedRegionCells on startup, or this breaks. Cannot think of workaround for now.
 	cell_mapping = world_data[region_key]["region_cell_mapping"]
 	region_data = world_data[region_key]["region_data"]
 	initialized = true
+	@warning_ignore(return_value_discarded)
 	emit_signal("initialize_complete")
 
 func is_initialized() -> bool:
@@ -52,9 +53,20 @@ func get_world_data() -> Dictionary:
 	var file: FileAccess = FileAccess.open(world_data_path, FileAccess.READ)
 	if file.get_as_text() != "":
 		var test_json_conv = JSON.new()
+		@warning_ignore(return_value_discarded)
 		test_json_conv.parse(file.get_as_text())
 		mapping = test_json_conv.get_data()
 	return mapping
+
+func change_cell(new_cell: RegionCell) -> void:
+	if new_cell != NodeReferences.CurrentCell:
+		get_tree().paused = true
+		var new_camera_target: Vector2 = new_cell.get_new_camera_target(NodeReferences.Player.global_position)
+		NodeReferences.WorldCamera.move_to_new_camera_target(new_camera_target)
+		if NodeReferences.WorldCamera.is_changing_cells():
+			await NodeReferences.WorldCamera.cell_change_complete
+		new_cell.activate() 
+		get_tree().paused = false
 
 func instance_cell_in_region(cell_packed: PackedScene, target_position: Vector2) -> RegionCell:
 	if NodeReferences.LoadedRegionCells == null:

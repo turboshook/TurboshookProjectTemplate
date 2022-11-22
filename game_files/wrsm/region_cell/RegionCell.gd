@@ -11,21 +11,14 @@ class_name RegionCell
 var empty_spawn_positions: Array
 
 var region_key: String
-var active = false
-
-var NodeReferences: Resource
 
 func _ready() -> void:
 	#if not WorldRegion.is_initialized():
 	#	await WorldRegion.initialize_complete
 	region_key = get_region_key()
-	NodeReferences = ResourceLoader.load(WorldRegion.get_node_references_path())
 
 func get_region_key() -> String:
 	return str(name).rsplit("_", false, 1)[0]
-
-func is_active() -> bool:
-	return active
 
 func get_corresponding_region_changer(target_id: float) -> RegionChanger:
 	for region_changer in RegionChangers.get_children():
@@ -48,22 +41,10 @@ func get_adjacent_cells() -> Dictionary:
 	return adjacent_cells
 
 # when the player enters a new area, that area connects to the main camera
-func _on_player_detector_body_entered(body):
-	if not active:
-		if not NodeReferences.WorldCamera.is_connected("cell_change_complete", Callable(self, "_on_cell_change_complete")):
-			NodeReferences.WorldCamera.connect("cell_change_complete", Callable(self, "_on_cell_change_complete"))
-		var new_camera_target = get_new_camera_target(body.global_position)
-		NodeReferences.WorldCamera.change_cell(new_camera_target)
+func _on_player_detector_body_entered(_body):
+	WorldRegion.change_cell(self)
 
-# when the player leaves a given area, that area disconnects from the main camera
-@warning_ignore(unused_parameter)
-func _on_player_detector_body_exited(_body):
-	if NodeReferences.WorldCamera.is_connected("cell_change_complete", Callable(self, "_on_cell_change_complete")):
-		NodeReferences.WorldCamera.disconnect("cell_change_complete", Callable(self, "_on_cell_change_complete"))
-	if not NodeReferences.WorldCamera.is_connected("cell_change_started", Callable(self, "_on_cell_change_started")):
-		NodeReferences.WorldCamera.connect("cell_change_started", Callable(self, "_on_cell_change_started"))
-
-func get_new_camera_target(player_origin) -> Vector2:
+func get_new_camera_target(player_origin: Vector2) -> Vector2:
 	var closest_node = null
 	var shortest_distance = Vector2(10000,10000)
 	for target_node in CameraTargets.get_children():
@@ -72,17 +53,9 @@ func get_new_camera_target(player_origin) -> Vector2:
 			closest_node = target_node
 	return closest_node.global_position
 
-func _on_cell_change_complete() -> void:
-	_activate() 
-
-func _on_cell_change_started() -> void:
-	NodeReferences.WorldCamera.disconnect("cell_change_started", Callable(self, "_on_cell_change_started"))
-	_deactivate()
-
-func _activate() -> void:
-	active = true
-	NodeReferences.WorldCamera.set_camera_limits(CameraLimits.get_children())
-	NodeReferences.CurrentCell = self
+func activate() -> void:
+	WorldRegion.NodeReferences.WorldCamera.set_camera_limits(CameraLimits.get_children())
+	WorldRegion.NodeReferences.CurrentCell = self
 	_add_adjacent_cells()
 
 func _add_adjacent_cells() -> void:
@@ -95,7 +68,7 @@ func _add_adjacent_cells() -> void:
 		new_area_name = new_area_name.left(new_area_name.length() - 5) # remove_at super.tscn extension
 		adjacent_area_names.append(StringName(new_area_name)) # cast to StringName to avoid issues with comparing area names in _free_distant_cells()
 		if not get_parent().has_node(new_area_name):
-			# warning-ignore:return_value_discarded
+			@warning_ignore(return_value_discarded)
 			WorldRegion.instance_cell_in_region(load(adjacent_cell_filepath), global_position + value)
 	_free_distant_cells(adjacent_area_names)
 
@@ -104,9 +77,6 @@ func _free_distant_cells(adjacent_area_names) -> void:
 	for area in loaded_areas.get_children():
 		if not adjacent_area_names.has(area.name):
 			area.queue_free()
-
-func _deactivate() -> void:
-	active = false
 
 func get_class() -> String:
 	return "RegionCell"

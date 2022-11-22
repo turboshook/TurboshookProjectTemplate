@@ -1,4 +1,5 @@
 extends Camera2D
+class_name WorldCamera
 
 @onready var ShakeTimer: Timer = $ShakeTimer
 var shake_amount: float = 0.0
@@ -9,18 +10,16 @@ enum States {
 }
 var current_state: int = States.FOLLOW_PLAYER
 
-#export (float) var follow_rate = 16.0
+@export var follow_rate: float = 16.0
 
 signal cell_change_started
 signal cell_change_complete
 
 var ignore_first_room: bool = true
-var changing_cells: bool = false
-var NodeReferences
+var move_tween_active: bool = false
 
 func _ready() -> void:
-	NodeReferences = ResourceLoader.load(WorldRegion.get_node_references_path())
-	NodeReferences.WorldCamera = self
+	WorldRegion.NodeReferences.WorldCamera = self
 
 func _physics_process(delta: float) -> void:
 	match current_state:
@@ -32,14 +31,9 @@ func _physics_process(delta: float) -> void:
 		States.CHANGE_CELL:
 			pass
 
-func follow_player(_delta: float) -> void:
-	# redundant check, state machine currently does not handle this properly and will be slightly
-	# offset from the center of the screen while attempting to follow player for some iterations before
-	# the tween starts
-	# new tween system does not kick in *immediately* like the Tween node does when you start() it.
-	#if not is_changing_cells(): 
-		#global_position = lerp(global_position, Player.global_position, delta * follow_rate)
-	global_position = NodeReferences.Player.global_position
+func follow_player(delta: float) -> void:
+	if not is_changing_cells(): 
+		global_position = lerp(global_position, WorldRegion.NodeReferences.Player.global_position, delta * follow_rate)
 
 func disable_camera_limits() -> void:
 	limit_top = -10000000
@@ -53,32 +47,39 @@ func set_camera_limits(limits: Array) -> void:
 	limit_left = limits[2].global_position.x
 	limit_right = limits[3].global_position.x
 
-func change_cell(new_camera_target: Vector2) -> void:
+func move_to_new_camera_target(new_camera_target: Vector2) -> void:
 	if ignore_first_room:
 		ignore_first_room = false
-		emit_signal("cell_change_complete")
 	else:
 		current_state = States.CHANGE_CELL
-		get_tree().paused = true
 		# because global_position will always be at or near the Player here, it must be reset
 		# to the center of the current screen in order to prevent snapping
 		global_position = get_screen_center_position()
 		disable_camera_limits()
 		var tween: Tween = get_tree().create_tween()
+		@warning_ignore(return_value_discarded)
 		tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+		@warning_ignore(return_value_discarded)
 		tween.tween_property(self, "global_position", new_camera_target, .5).set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_OUT) # work checked this, doesn't feel right
+		move_tween_active = true
+		@warning_ignore(return_value_discarded)
 		tween.finished.connect(Callable(self, "_on_cell_change_completed"))
+		@warning_ignore(return_value_discarded)
 		emit_signal("cell_change_started")
 
 func _on_cell_change_completed() -> void:
 	current_state = States.FOLLOW_PLAYER
-	get_tree().paused = false
+	move_tween_active = false
+	@warning_ignore(return_value_discarded)
 	emit_signal("cell_change_complete")
+
+func is_changing_cells() -> bool:
+	return move_tween_active
 
 func set_camera_position(destination: Vector2) -> void:
 	global_position = destination
 
-func bump(direction: Vector2, force: float) -> void:
+func bump(_direction: Vector2, _force: float) -> void:
 	# the idea here is to get a single directional hit, most likely using a tween
 	print("this don't do nothing yet")
 

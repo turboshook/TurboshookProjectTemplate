@@ -1,33 +1,38 @@
 # warning-ignore-all:unused_argument
-extends FiniteStackMachineState
+extends Resource
+class_name FiniteStackMachineState
 
-# minion = Entity using the state
-# state_time = time in seconds we have been in this state
+#var name = "state Superclass"
+var name: String
+var state_parent: Node
+#var state_class # this was just being used to store a copy of this Resource inside of itself...
+var args: Array = []
+var state_time: float = 0
+var started = false
 
-# Have process return 1 or -1 when the state is finished,
-# otherwise return 0 to continue
+# warning-ignore:unused_signal
+signal state_popped # <- I added this
 
-# Constructor, called checked state creation
-func _init() -> void:
-	name = "Blank State"
-
-# on_start is run once when the Command is first processed (input or process)
-func on_start() -> void: # Run once when the state starts
+func on_start() -> void:
 	pass
 
-# on_end is called once when the state is finished or 'popped' from the stack 
-func on_end() -> void: # Run once when the state is finished
-	# end logic goes here
+func on_end() -> void:
 	emit_signal("state_popped")
 
-# typically process is called once every frame in the minion's _process() callback
-func process(delta: float) -> void: # Run usually each step of the minion, but can be called to run whenever
+func process(delta: float) -> void:
 	pass
 
-# alterante to process, if you want the physics thread
 func physics_process(delta: float) -> void:
 	pass
 
-# typically input is called in the minion's _input() callback
 func input(event: InputEvent) -> void:
 	pass
+
+func get_class() -> String:
+	return "State"
+
+func is_class(value: String) -> bool:
+	if value == "State":
+		return true
+	else:
+		return false

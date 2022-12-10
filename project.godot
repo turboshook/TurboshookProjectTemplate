@@ -48,6 +48,16 @@ _global_script_classes=[{
 "class": &"StateMachine",
 "language": &"GDScript",
 "path": "res://game_files/finite_state_machine/StateMachine.gd"
+}, {
+"base": "Resource",
+"class": &"WRSMNodeReferences",
+"language": &"GDScript",
+"path": "res://game_files/wrsm/node_references/NodeReferences.gd"
+}, {
+"base": "Camera2D",
+"class": &"WorldCamera",
+"language": &"GDScript",
+"path": "res://game_files/wrsm/world_camera/WorldCamera.gd"
 }]
 _global_script_class_icons={
 "CameraLimit": "",
@@ -57,7 +67,9 @@ _global_script_class_icons={
 "RegionCellDetector": "",
 "RegionChanger": "",
 "RegionMap": "",
-"StateMachine": ""
+"StateMachine": "",
+"WRSMNodeReferences": "",
+"WorldCamera": ""
 }
 
 [application]
@@ -66,18 +78,6 @@ config/name="2DProjectTemplate"
 config/features=PackedStringArray("4.0")
 config/icon="res://icon.svg"
 
-[autoload]
-
-Utils="*res://game_files/autoloads/Utils.gd"
-WorldRegion="*res://game_files/wrsm/autoload/WorldRegion.gd"
-
-[display]
-
-window/size/viewport_width=256
-window/size/viewport_height=144
-
 [layer_names]
 
-2d_physics/layer_1="World"
-2d_physics/layer_2="Player"
 2d_physics/layer_32="RegionCell"

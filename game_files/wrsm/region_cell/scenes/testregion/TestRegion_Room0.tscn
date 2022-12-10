@@ -1,5 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://dpgx5u5831wcw"]
-
-[ext_resource type="PackedScene" uid="uid://kiw0lps8ipwc" path="res://game_files/wrsm/region_cell/templates/1x1_RegionCell.tscn" id="1_sg2gr"]
-
-[node name="TestRegion_Room0" instance=ExtResource("1_sg2gr")]

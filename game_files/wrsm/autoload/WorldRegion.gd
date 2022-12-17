@@ -83,9 +83,9 @@ func clear_loaded_cells() -> void:
 
 func change_region(target_cell_path: String, target_cell_position: Vector2, target_region_changer_id: int) -> void:
 	clear_loaded_cells()
-	var target_cell_instance: RegionCell = WorldRegion.instance_cell_in_region(load(target_cell_path), target_cell_position)
+	var target_cell_instance: RegionCell = instance_cell_in_region(load(target_cell_path), target_cell_position)
 	await target_cell_instance.ready # because we have to instance RegionCells in the above call using call_deferred()
 	var target_region_changer: RegionChanger = target_cell_instance.get_corresponding_region_changer(target_region_changer_id)
 	var player_spawn_position: Vector2 = target_region_changer.get_player_spawn_position()
 	NodeReferences.Player.global_position = player_spawn_position 
-	WorldRegion.update_region(target_cell_instance)
+	update_region(target_cell_instance)

@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://df1kq1uwx7bi"]
+
+[ext_resource type="Script" path="res://game_files/utils/MyAnimationPlayer.gd" id="1_7s7vm"]
+
+[node name="MyAnimationPlayer" type="AnimationPlayer"]
+script = ExtResource("1_7s7vm")

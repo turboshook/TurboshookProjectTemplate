@@ -11,7 +11,7 @@ func instance_scene(packed_scene: PackedScene, parent_node: Node, target_global_
 
 func instance_projectile(packed_projectile_scene: PackedScene, projectile_direction_vector: Vector2, target_global_position: Vector2) -> Node:
 	var projectile_scene: Node = packed_projectile_scene.instantiate()
-	WorldRegion.WorldReference.CurrentCell.ProjectileLayer.add_child(projectile_scene)
+	WorldRegion.NodeReferences.CurrentCell.ProjectileLayer.add_child(projectile_scene)
 	projectile_scene.global_position = target_global_position
 	projectile_scene.set_projectile_rotation_from_vector(projectile_direction_vector)
 	# set once here, assuming only enemies spawn projectiles upon their instantiation

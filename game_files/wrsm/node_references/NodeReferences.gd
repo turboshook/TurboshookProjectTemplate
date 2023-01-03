@@ -38,6 +38,13 @@ var LoadedRegionCells: Node2D = null:
 var CurrentCell: RegionCell = null:
 	get:
 		return CurrentCell
-	set(mod_value):
-		CurrentCell = mod_value
+	set(new_value):
+		CurrentCell = new_value
+		CurrentEffectLayer = CurrentCell.get_node("Effects")
 		current_cell_ready.emit()
+
+var CurrentEffectLayer: Node = null:
+	get:
+		return CurrentEffectLayer
+	set(new_value):
+		CurrentEffectLayer = new_value

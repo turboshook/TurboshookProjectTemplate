@@ -1,3 +1,11 @@
-[gd_scene format=3 uid="uid://bdu8i0dn2ojmf"]
+[gd_scene load_steps=2 format=3 uid="uid://bdu8i0dn2ojmf"]
+
+[ext_resource type="PackedScene" uid="uid://bbhytwl35wqe8" path="res://game_files/root_scene/TransitionLayer.tscn" id="1_6lcdo"]
 
 [node name="Game" type="Node"]
+
+[node name="TransitionLayer" parent="." instance=ExtResource("1_6lcdo")]
+
+[node name="WorldSceneContainer" type="Node" parent="."]
+
+[node name="BattleManagerContainer" type="Node" parent="."]

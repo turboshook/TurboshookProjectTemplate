@@ -15,7 +15,7 @@ func _ready() -> void:
 
 func _input(event: InputEvent) -> void:
 	#if event.is_action_pressed("menu") or event.is_action_pressed("interact"):
-	if event.is_action_pressed("jump"):
+	if event.is_action_pressed("ui_accept"):
 		_build_mapping_file()
 
 func _build_mapping_file() -> void:

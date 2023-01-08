@@ -16,23 +16,23 @@ signal state_popped # <- I added this
 func on_start() -> void:
 	pass
 
-func on_end() -> void:
-	emit_signal("state_popped")
-
-func process(delta: float) -> void:
+func process(_delta: float) -> void:
 	pass
 
-func physics_process(delta: float) -> void:
+func physics_process(_delta: float) -> void:
 	pass
 
-func input(event: InputEvent) -> void:
+func input(_event: InputEvent) -> void:
 	pass
 
 func get_class() -> String:
-	return "State"
+	return "FiniteStackMachineState"
 
 func is_class(value: String) -> bool:
-	if value == "State":
+	if value == "FiniteStackMachineState":
 		return true
 	else:
 		return false
+
+func on_end() -> void:
+	emit_signal("state_popped")

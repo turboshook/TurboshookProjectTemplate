@@ -81,9 +81,4 @@ func _get_world_data_path() -> String:
 	final_path = module_root_dir + "/world_data/world_data.json"
 	return final_path
 
-func get_class() -> String:
-	return "RegionMap"
-
-func is_class(test_string: String) -> bool:
-	return test_string == get_class()
 

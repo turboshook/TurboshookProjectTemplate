@@ -25,14 +25,5 @@ func physics_process(_delta: float) -> void:
 func input(_event: InputEvent) -> void:
 	pass
 
-func get_class() -> String:
-	return "FiniteStackMachineState"
-
-func is_class(value: String) -> bool:
-	if value == "FiniteStackMachineState":
-		return true
-	else:
-		return false
-
 func on_end() -> void:
 	emit_signal("state_popped")

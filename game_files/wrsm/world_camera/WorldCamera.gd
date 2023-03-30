@@ -57,20 +57,20 @@ func move_to_new_camera_target(new_camera_target: Vector2) -> void:
 		global_position = get_screen_center_position()
 		disable_camera_limits()
 		var tween: Tween = get_tree().create_tween()
-		@warning_ignore(return_value_discarded)
+		@warning_ignore("return_value_discarded")
 		tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
-		@warning_ignore(return_value_discarded)
+		@warning_ignore("return_value_discarded")
 		tween.tween_property(self, "global_position", new_camera_target, .5).set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_OUT) # work checked this, doesn't feel right
 		move_tween_active = true
-		@warning_ignore(return_value_discarded)
+		@warning_ignore("return_value_discarded")
 		tween.finished.connect(Callable(self, "_on_cell_change_completed"))
-		@warning_ignore(return_value_discarded)
+		@warning_ignore("return_value_discarded")
 		emit_signal("cell_change_started")
 
 func _on_cell_change_completed() -> void:
 	current_state = States.FOLLOW_PLAYER
 	move_tween_active = false
-	@warning_ignore(return_value_discarded)
+	@warning_ignore("return_value_discarded")
 	emit_signal("cell_change_complete")
 
 func is_changing_cells() -> bool:
@@ -89,12 +89,6 @@ func shake(force: float, duration: float) -> void:
 
 func _on_shake_timer_timeout():
 	offset = Vector2.ZERO
-
-func get_class() -> String:
-	return "PlayerCamera"
-
-func is_class(test_string: String) -> bool:
-	return test_string == get_class()
 
 
 

@@ -15,9 +15,3 @@ func _on_flicker_timer_timeout():
 	visible = !visible
 	_FlickerTimer.start()
 
-func get_class() -> String:
-	return "MySprite2D"
-
-func is_class(test_string: String) -> bool:
-	return test_string == "MySprite2D"
-

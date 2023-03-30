@@ -68,7 +68,7 @@ func _add_adjacent_cells() -> void:
 		new_area_name = new_area_name.left(new_area_name.length() - 5) # remove_at super.tscn extension
 		adjacent_area_names.append(StringName(new_area_name)) # cast to StringName to avoid issues with comparing area names in _free_distant_cells()
 		if not get_parent().has_node(new_area_name):
-			@warning_ignore(return_value_discarded)
+			@warning_ignore("return_value_discarded")
 			WorldRegion.instance_cell_in_region(load(adjacent_cell_filepath), global_position + value)
 	_free_distant_cells(adjacent_area_names)
 
@@ -78,11 +78,7 @@ func _free_distant_cells(adjacent_area_names) -> void:
 		if not adjacent_area_names.has(area.name):
 			area.queue_free()
 
-func get_class() -> String:
-	return "RegionCell"
 
-func is_class(test_class: String) -> bool:
-	return test_class == get_class()
 
 
 

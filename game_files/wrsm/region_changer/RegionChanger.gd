@@ -30,11 +30,11 @@ func get_player_spawn_position() -> Vector2:
 func get_id() -> float:
 	return id
 
-@warning_ignore(unused_parameter)
+@warning_ignore("unused_parameter")
 func _on_player_detection_body_entered(_body: Node2D):
 	if target_cell_path != "":
 		var current_room_global_position: Vector2 = get_parent().global_position # as long as we don't move the container scene, we're good
-		@warning_ignore(narrowing_conversion)
+		@warning_ignore("narrowing_conversion")
 		WorldRegion.change_region(target_cell_path, current_room_global_position, id)
 	else:
 		print("no cell path specified")

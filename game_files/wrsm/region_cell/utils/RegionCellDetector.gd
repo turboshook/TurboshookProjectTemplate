@@ -8,9 +8,3 @@ func get_parent_cell() -> Node2D:
 
 func get_parent_cell_position(relative_to):
 	return get_parent_cell().global_position - relative_to
-
-func get_class() -> String:
-	return "RegionCellDetector"
-
-func is_class(test_class: String) -> bool:
-	return test_class == get_class()

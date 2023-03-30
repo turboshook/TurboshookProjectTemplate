@@ -22,7 +22,7 @@ func initialize() -> void:
 	cell_mapping = world_data[region_key]["region_cell_mapping"]
 	region_data = world_data[region_key]["region_data"]
 	initialized = true
-	@warning_ignore(return_value_discarded)
+	@warning_ignore("return_value_discarded")
 	emit_signal("initialize_complete")
 
 func is_initialized() -> bool:
@@ -53,7 +53,7 @@ func get_world_data() -> Dictionary:
 	var file: FileAccess = FileAccess.open(world_data_path, FileAccess.READ)
 	if file.get_as_text() != "":
 		var test_json_conv = JSON.new()
-		@warning_ignore(return_value_discarded)
+		@warning_ignore("return_value_discarded")
 		test_json_conv.parse(file.get_as_text())
 		mapping = test_json_conv.get_data()
 	return mapping

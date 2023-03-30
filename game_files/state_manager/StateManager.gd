@@ -50,5 +50,3 @@ func process(delta: float) -> void:
 	if new_state:
 		change_state(new_state)
 
-func get_class() -> String:
-	return "StateManager"

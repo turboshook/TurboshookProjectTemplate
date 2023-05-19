@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://bapcx6hqu6kc2"]
-
-[ext_resource type="Script" path="res://game_files/utils/MySprite2D.gd" id="1_5ukno"]
-
-[node name="MySprite2D" type="Sprite2D"]
-script = ExtResource("1_5ukno")

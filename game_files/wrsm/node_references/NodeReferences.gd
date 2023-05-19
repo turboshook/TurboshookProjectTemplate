@@ -14,18 +14,18 @@ var World: Node2D = null:
 		World = mod_value
 		world_ready.emit()
 
-var Player: CharacterBody2D = null:
+var PlayerScene: CharacterBody2D = null:
 	get:
-		return Player
+		return PlayerScene
 	set(mod_value):
-		Player = mod_value
+		PlayerScene = mod_value
 		player_ready.emit()
 
-var WorldCamera: WorldCamera = null:
+var WorldCameraScene: WorldCamera = null:
 	get:
-		return WorldCamera
+		return WorldCameraScene
 	set(mod_value):
-		WorldCamera = mod_value
+		WorldCameraScene = mod_value
 		world_camera_ready.emit()
 
 var LoadedRegionCells: Node2D = null:

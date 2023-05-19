@@ -4,7 +4,6 @@
 
 [node name="WorldCamera" type="Camera2D"]
 process_mode = 3
-current = true
 script = ExtResource("1_d83fw")
 
 [node name="ShakeTimer" type="Timer" parent="."]

@@ -58,20 +58,10 @@ func get_world_data() -> Dictionary:
 		mapping = test_json_conv.get_data()
 	return mapping
 
-func change_cell(new_cell: RegionCell) -> void:
-	if new_cell != NodeReferences.CurrentCell:
-		get_tree().paused = true
-		var new_camera_target: Vector2 = new_cell.get_new_camera_target(NodeReferences.Player.global_position)
-		NodeReferences.WorldCamera.move_to_new_camera_target(new_camera_target)
-		if NodeReferences.WorldCamera.is_changing_cells():
-			await NodeReferences.WorldCamera.cell_change_complete
-		new_cell.activate() 
-		get_tree().paused = false
-
 func instance_cell_in_region(cell_packed: PackedScene, target_position: Vector2) -> RegionCell:
 	if NodeReferences.LoadedRegionCells == null:
 		return null
-	var cell_instance: RegionCell = cell_packed.instantiate()
+	var cell_instance: RegionCell = cell_packed.instance()
 	NodeReferences.LoadedRegionCells.call_deferred("add_child", cell_instance)
 	cell_instance.global_position = target_position
 	return cell_instance
@@ -81,11 +71,62 @@ func clear_loaded_cells() -> void:
 		NodeReferences.LoadedRegionCells.remove_child(child)
 		child.queue_free()
 
-func change_region(target_cell_path: String, target_cell_position: Vector2, target_region_changer_id: int) -> void:
+func focus_cell(new_cell: RegionCell) -> void:
+	if new_cell != NodeReferences.CurrentCell:
+		
+		get_tree().paused = true
+		
+		var adjacent_cells: Dictionary = cell_mapping[new_cell.name]
+		adjacent_cells[new_cell.filename] = var_to_str(Vector2.ZERO)
+		_add_adjacent_cells(new_cell, adjacent_cells)
+		
+		var new_camera_target: Vector2 = new_cell.get_new_camera_target(NodeReferences.PlayerScene.global_position)
+		NodeReferences.WorldCameraScene.move_to_new_camera_target(new_camera_target)
+		if NodeReferences.WorldCameraScene.is_changing_cells():
+			await NodeReferences.WorldCameraScene.cell_focus_complete
+			
+		new_cell.activate() # updates NodeReferences.CurrentCell
+		_free_distant_cells(adjacent_cells)
+		
+		get_tree().paused = false
+		emit_signal("cell_focus_complete")
+
+#func change_region(target_cell_path: String, target_cell_position: Vector2, target_cell_changer_id: float) -> void:
+func change_cell(target_cell_path: String, target_cell_changer_id: float) -> void:
+	var target_cell_position: Vector2 = NodeReferences.CurrentCell.global_position
 	clear_loaded_cells()
 	var target_cell_instance: RegionCell = instance_cell_in_region(load(target_cell_path), target_cell_position)
 	await target_cell_instance.ready # because we have to instance RegionCells in the above call using call_deferred()
-	var target_region_changer: RegionChanger = target_cell_instance.get_corresponding_region_changer(target_region_changer_id)
-	var player_spawn_position: Vector2 = target_region_changer.get_player_spawn_position()
-	NodeReferences.Player.global_position = player_spawn_position 
-	update_region(target_cell_instance)
+	var target_cell_changer: CellChanger = target_cell_instance.get_corresponding_cell_changer(target_cell_changer_id)
+	var player_spawn_position: Vector2 = target_cell_changer.get_player_spawn_position()
+	NodeReferences.PlayerScene.global_position = player_spawn_position 
+	update_region(target_cell_instance) # redundant for subareas but not worth changing now
+	emit_signal("cell_change_complete")
+
+func _add_adjacent_cells(reference_cell: RegionCell, adjacent_cells: Dictionary) -> void:
+	for adjacent_cell_filepath in adjacent_cells.keys():
+		var adjacent_cell_name: String = _get_cell_name_from_filepath(adjacent_cell_filepath)
+		if not NodeReferences.LoadedRegionCells.has_node(adjacent_cell_name):
+			var adjacent_cell_relative_position = str_to_var(adjacent_cells[adjacent_cell_filepath])
+			# warning-ignore:return_value_discarded
+			instance_cell_in_region(
+				load(adjacent_cell_filepath), 
+				reference_cell.global_position + adjacent_cell_relative_position
+			)
+
+func _free_distant_cells(adjacent_cells: Dictionary) -> void:
+	for cell in NodeReferences.LoadedRegionCells.get_children():
+		if not adjacent_cells.has(cell.filename):
+			cell.queue_free()
+
+func _get_cell_name_from_filepath(cell_filepath: String) -> String:
+	var last_forward_slash_index: int = cell_filepath.rfindn("/") + 1
+	var cell_name: String = (cell_filepath.substr(last_forward_slash_index, -1)) # remove leading filepath
+	cell_name = cell_name.left(cell_name.length() - 5) # remove .tscn extension
+	return cell_name
+
+
+
+
+
+

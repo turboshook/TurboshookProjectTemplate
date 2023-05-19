@@ -10,16 +10,17 @@ enum States {
 }
 var current_state: int = States.FOLLOW_PLAYER
 
+@export var cell_focus_time: float = 0.75
 @export var follow_rate: float = 16.0
 
-signal cell_change_started
-signal cell_change_complete
+signal cell_focus_started
+signal cell_focus_complete
 
 var ignore_first_room: bool = true
 var move_tween_active: bool = false
 
 func _ready() -> void:
-	WorldRegion.NodeReferences.WorldCamera = self
+	WorldRegion.NodeReferences.WorldCameraScene = self
 
 func _physics_process(delta: float) -> void:
 	match current_state:
@@ -33,7 +34,8 @@ func _physics_process(delta: float) -> void:
 
 func follow_player(delta: float) -> void:
 	if not is_changing_cells(): 
-		global_position = lerp(global_position, WorldRegion.NodeReferences.Player.global_position, delta * follow_rate)
+		global_position = lerp(global_position, WorldRegion.NodeReferences.PlayerScene.global_position, delta * follow_rate)
+		#global_position = WorldRegion.NodeReferences.PlayerScene.global_position
 
 func disable_camera_limits() -> void:
 	limit_top = -10000000
@@ -60,18 +62,18 @@ func move_to_new_camera_target(new_camera_target: Vector2) -> void:
 		@warning_ignore("return_value_discarded")
 		tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
 		@warning_ignore("return_value_discarded")
-		tween.tween_property(self, "global_position", new_camera_target, .5).set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_OUT) # work checked this, doesn't feel right
+		tween.tween_property(self, "global_position", new_camera_target, cell_focus_time).set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_OUT) # work checked this, doesn't feel right
 		move_tween_active = true
 		@warning_ignore("return_value_discarded")
 		tween.finished.connect(Callable(self, "_on_cell_change_completed"))
 		@warning_ignore("return_value_discarded")
-		emit_signal("cell_change_started")
+		cell_focus_started.emit()
 
 func _on_cell_change_completed() -> void:
 	current_state = States.FOLLOW_PLAYER
 	move_tween_active = false
 	@warning_ignore("return_value_discarded")
-	emit_signal("cell_change_complete")
+	cell_focus_complete.emit()
 
 func is_changing_cells() -> bool:
 	return move_tween_active

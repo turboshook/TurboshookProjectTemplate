@@ -1,7 +1,6 @@
-World Region System Module (WRSM) 
-Documentation
-Version: 0.0.1
-Last update: Godot v. 4 beta 1
+World Region System Module (WRSM) by itlticket
+Ver. 0.0.2 (Cryptid)
+Last update engine ver. v4.0.2.stable.official [7a0977ce2]
 
  - Table of Conents - 
 I. Intro
@@ -74,4 +73,5 @@ Recall, wrsm treats your game's world like this:
 	- The World can contain a number of distinct WorldRegions. 
 
 IV.
-TBD
+Just get good I guess
+

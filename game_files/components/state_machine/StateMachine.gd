@@ -1,6 +1,6 @@
 #https://www.youtube.com/watch?v=DPxIMVC0oZA&ab_channel=TheShaggyDev
 extends Node
-class_name StateManager
+class_name StateMachine
 
 @export var starting_state: NodePath
 

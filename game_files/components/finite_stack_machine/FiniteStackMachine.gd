@@ -155,6 +155,10 @@ func _get_index_of_state(target_name: String) -> int:
 			index = i
 	return index
 
+func get_current_state_name() -> String:
+	if stack_machine.size() == 0:
+		return "NONE"
+	return stack_machine[0].name
 
 
 

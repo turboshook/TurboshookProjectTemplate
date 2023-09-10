@@ -1,11 +1,18 @@
 extends Sprite2D
 class_name MySprite2D
 
+## When [param true], this sprite will track the rounded [param global_position] of its parent.[br][br] 
+## Because this changes the positional arguments of the node, any placement adjustments made to 
+## assigned textures should be done using the [param offset] property.
+@export var pixel_snap_fix: bool = true
+
+var _parent_node: Node = null
+
 var _flicker: bool = false
-var _target_flicker_time: float = 0.0 			# amount of time sprite flicker will be active
-var _total_flicker_time: float = 0.0 			# amount of time the sprite flicker has been happening
-var _flicker_interval: float = 0.0				# amount of time between changes in visibility 
-var _current_flicker_interval: float = 0.0		# amount of time since the last change in visibility
+var _target_flicker_time: float = 0.0 			# total amount of time this sprite flicker will be active
+var _total_flicker_time: float = 0.0 			# elapsed time of this sprite flicker
+var _flicker_interval: float = 0.0				# time between changes in visibility 
+var _current_flicker_interval: float = 0.0		# time since the last change in visibility
 
 var _sprite_shake: bool = false
 var _original_offset: Vector2
@@ -15,6 +22,15 @@ var _total_shake_time: float = 0.0
 
 func _ready() -> void:
 	_original_offset = offset
+	if pixel_snap_fix:
+		_parent_node = get_parent()
+
+func _process(_delta: float) -> void:
+	if pixel_snap_fix:
+		if _parent_node is Node2D or _parent_node is Control:
+			global_position = _parent_node.global_position.round()
+		else:
+			global_position = global_position.round()
 
 func _physics_process(delta: float) -> void:
 	if _flicker:

@@ -1,9 +1,9 @@
 extends Sprite2D
 class_name MySprite2D
 
-## When [param true], this sprite will track the rounded [param global_position] of its parent.[br][br] 
-## Because this changes the positional arguments of the node, any placement adjustments made to 
-## assigned textures should be done using the [param offset] property.
+## When [param true], this scene will snap to the rounded [param global_position] of its parent.[br][br] 
+## Because this setting directly changes positional properties, any placement adjustments made in-editor 
+## to assigned textures should be done using the [param offset] property.
 @export var pixel_snap_fix: bool = true
 
 var _parent_node: Node = null

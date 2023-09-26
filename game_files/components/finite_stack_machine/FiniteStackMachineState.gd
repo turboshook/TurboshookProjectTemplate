@@ -1,11 +1,9 @@
 # warning-ignore-all:unused_argument
-extends Resource
+extends Node
 class_name FiniteStackMachineState
 
-#var name = "state Superclass"
-var name: String
+var state_name: String
 var state_parent: Node
-#var state_class # this was just being used to store a copy of this Resource inside of itself...
 var args: Array = []
 var state_time: float = 0
 var started = false

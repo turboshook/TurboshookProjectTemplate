@@ -1,7 +1,7 @@
 extends FiniteStackMachineState
 
 func _init() -> void:
-	name = "BLANKSTATE"
+	state_name = "BLANKSTATE"
 
 func on_start() -> void: 
 	pass

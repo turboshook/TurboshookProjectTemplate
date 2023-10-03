@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://degivf7sudgk1"]
+
+[ext_resource type="Script" path="res://game_files/components/my_point_light_2d/MyPointLight2D.gd" id="1_bpjuv"]
+
+[node name="MyPointLight2D" type="PointLight2D"]
+script = ExtResource("1_bpjuv")

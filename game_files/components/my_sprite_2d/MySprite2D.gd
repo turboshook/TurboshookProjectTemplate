@@ -81,3 +81,21 @@ func _handle_sprite_shake(delta: float) -> void:
 		var offset_x: float = randf_range(-_shake_amount, _shake_amount)
 		var offset_y: float = randf_range(-_shake_amount, _shake_amount)
 		offset = Vector2(_original_offset.x + offset_x, _original_offset.y + offset_y)
+
+func flash(ramp_down_time: float = 0.1) -> void:
+	# https://www.reddit.com/r/godot/comments/y8n1wa/is_it_possible_to_make_a_sprite_flash_white_using/
+	var flash_tween: Tween = create_tween()
+	flash_tween.tween_property(
+		self,
+		"self_modulate:v",
+		1.0,
+		ramp_down_time
+	).from(3.0)
+
+func stretch() -> void:
+	pass # TODO
+
+
+
+
+

@@ -1,6 +1,26 @@
 WRSM CHANGELOG
 
+ver 0.0.3 (Nitrogen)
+engine ver. v4.1.stable.official [970459615]
+	- Simplified world data initialization process. Now, World calls 
+	WorldRegion.initialize_world_data() and passes a reference to itself. 
+	WorldRegion then initializes world data, region data, and node references
+	based on World (which has direct tree access to all of this data). All of 
+	this data is now wiped when the world exits the SceneTree.
+	- Removed variable initialization signals from NodeReferences and removed 
+	references to specialty container nodes thay may exist in a given RegionCell.
+	These should be referenced instead through WorldRegion.node_references's 
+	current_cell field because they will vary wildly from game to game. It does
+	not make sense to bundle that into this module.
+	- Removed extraneous camera limit markers. The limits on WorldCamera are now
+	set using a single Marker2D scene that is used to set both the bottom and 
+	rightmost camera limits of the RegionCell.
+	- WorldRegion now has a simple world_process boolean variable that can be 
+	used to limit Player/NPC/etc. actions during things like scene transitions.
+	- Updated variable naming and capitalization conventions.
+
 ver 0.0.2 (Cryptid)
+engine ver. v4.0.2.stable.official [7a0977ce2]
 	- Removed cell instancing and freeing capabilities from RegionCell scene, this is now handled
 	by the WorldRegion singleton, as it probably should have been this whole time.
 	- Refactored "change cell" vernacular to "focus cell" in any cases where a simple WorldCamera
@@ -15,6 +35,7 @@ ver 0.0.2 (Cryptid)
 	props, such as tall trees, that will be visible from out of bounds and would otherwise visibly 
 	pop in after the cell focus camera transition is complete. 
 
-ver 0.0.1 (Babby)
+ver 0.0.1 (BeanMan)
+engine ver. ~v3.3x
 	- Initial version, basically the same thing I had been passing between my projects for some
 	time now.

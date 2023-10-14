@@ -1,20 +1,9 @@
 extends Node2D
 
-@onready var LoadedRegionCells: Node2D = $LoadedRegionCells
-@onready var PlayerContainer: Node2D = $PlayerContainer
-
-var NodeReferences: Resource 
+@onready var loaded_region_cells: Node2D = $LoadedRegionCells
+@onready var player_container: Node2D = $PlayerContainer
+@onready var world_camera: WorldCamera = $WorldCamera
 
 func _ready() -> void:
-	NodeReferences = ResourceLoader.load(WorldRegion.get_node_references_path())
-	NodeReferences.World = self
-	NodeReferences.LoadedRegionCells = LoadedRegionCells
-	NodeReferences.Player = PlayerContainer.get_child(0) # just to avoid extra code in the Player script
-	WorldRegion.initialize()
+	WorldRegion.initialize_world_data(self)
 
-# not presently used
-func get_current_cell() -> RegionCell:
-	for cell in LoadedRegionCells.get_children():
-		if cell.is_active():
-			return cell
-	return null

@@ -1,12 +1,12 @@
-@tool
 extends Node2D
 class_name RegionCell
 
-@onready var CameraLimits: Node2D = $Utils/CameraLimits
-@onready var CameraTargets: Node2D = $Utils/CameraTargets
-@onready var RegionChangers: Node2D = $RegionChangers
+@onready var camera_bottom_right_limit = $Utils/CameraBottomRightLimit
+@onready var camera_targets: Node2D = $Utils/CameraTargets
 
-@onready var ProjectileLayer: Node2D = $ProjectileLayer
+@onready var cell_changers: Node2D = $CellChangers
+@onready var projectile_layer: Node2D = $ProjectileLayer
+@onready var effect_layer: Node2D = $EffectLayer
 
 var empty_spawn_positions: Array
 
@@ -18,10 +18,10 @@ func _ready() -> void:
 func get_region_key() -> String:
 	return str(name).rsplit("_", false, 1)[0]
 
-func get_corresponding_region_changer(target_id: float) -> RegionChanger:
-	for region_changer in RegionChangers.get_children():
-		if region_changer.id == target_id:
-			return region_changer
+func get_corresponding_cell_changer(target_id: String) -> CellChanger:
+	for cell_changer in cell_changers.get_children():
+		if cell_changer.id == target_id:
+			return cell_changer
 	return null
 
 func get_adjacent_cells() -> Dictionary:
@@ -30,7 +30,7 @@ func get_adjacent_cells() -> Dictionary:
 	for cell_detector in RegionCellDetectorContainer.get_children():
 		if cell_detector.get_overlapping_areas().size() > 0:
 			var cell = cell_detector.get_overlapping_areas()[0]
-			adjacent_cells[cell.get_parent_cell().filename] = var_to_str(cell.get_parent_cell_position(global_position))
+			adjacent_cells[cell.get_parent_cell().scene_file_path] = var_to_str(cell.get_parent_cell_position(global_position))
 	
 	print("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - ")
 	print(name, " adjacent cells: ", adjacent_cells)
@@ -39,21 +39,35 @@ func get_adjacent_cells() -> Dictionary:
 	return adjacent_cells
 
 # when the player enters a new area, that area connects to the main camera
-func _on_player_detector_body_entered(_body):
-	WorldRegion.change_cell(self)
+func _on_player_detector_body_entered(_body) -> void:
+	WorldRegion.focus_cell(self)
+
+func get_camera_limits() -> Array[int]:
+	return [
+		global_position.y,
+		global_position.y + camera_bottom_right_limit.position.y,
+		global_position.x,
+		global_position.x + camera_bottom_right_limit.position.x
+	]
 
 func get_new_camera_target(player_origin: Vector2) -> Vector2:
 	var closest_node = null
 	var shortest_distance = Vector2(10000,10000)
-	for target_node in CameraTargets.get_children():
+	for target_node in camera_targets.get_children():
 		if (target_node.global_position - player_origin).length() < shortest_distance.length():
 			shortest_distance = target_node.global_position - player_origin
 			closest_node = target_node
 	return closest_node.global_position
 
 func activate() -> void:
-	WorldRegion.NodeReferences.WorldCamera.set_camera_limits(CameraLimits.get_children())
-	WorldRegion.NodeReferences.CurrentCell = self
+	var camera_limits: Array[int] = get_camera_limits()
+	WorldRegion.node_references.world_camera.set_limits(
+		camera_limits[0],
+		camera_limits[1],
+		camera_limits[2],
+		camera_limits[3]
+	)
+	WorldRegion.node_references.current_cell = self
 
 
 

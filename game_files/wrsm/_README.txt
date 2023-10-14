@@ -1,6 +1,6 @@
 World Region System Module (WRSM) by itlticket
-Ver. 0.0.2 (Cryptid)
-Last update engine ver. v4.0.2.stable.official [7a0977ce2]
+Ver. 0.0.3 (Nitrogen)
+Last update engine ver. v4.1.stable.official [970459615]
 
  - Table of Conents - 
 I. Intro

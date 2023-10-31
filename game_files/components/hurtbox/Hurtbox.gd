@@ -3,9 +3,9 @@ class_name Hurtbox
 
 signal hit_detected(hit_data: HitData)
 
-@export var _owner_type: Global.HitboxOwnerTypes = Global.HitboxOwnerTypes.WORLD
+@export var _owner_type: Hitbox.HitboxOwnerType = Hitbox.HitboxOwnerType.WORLD
 
-func initialize(new_owner: Global.HitboxOwnerTypes) -> void:
+func initialize(new_owner: Hitbox.HitboxOwnerType) -> void:
 	if new_owner < 0 or new_owner > 2:
 		return
 	_owner_type = new_owner

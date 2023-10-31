@@ -1,7 +1,13 @@
 extends Area2D
 class_name Hitbox
 
-@export var _owner_type: Global.HitboxOwnerTypes = Global.HitboxOwnerTypes.WORLD
+enum HitboxOwnerType {
+	WORLD,
+	PLAYER, 
+	ENEMY 
+}
+
+@export var _owner_type: HitboxOwnerType = HitboxOwnerType.WORLD
 @export var hit_data: HitData = null
 @export_range(0.0, 5.0, 0.05) var lifetime: float = 0.0
 var _current_lifetime: float = 0.0

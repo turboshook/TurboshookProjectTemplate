@@ -18,9 +18,7 @@ signal cell_focus_complete
 
 var ignore_first_room: bool = true
 var move_tween_active: bool = false
-
-func _ready() -> void:
-	WorldRegion.NodeReferences.WorldCameraScene = self
+var node_references: WRSMNodeReferences 
 
 func _physics_process(delta: float) -> void:
 	match current_state:
@@ -31,23 +29,27 @@ func _physics_process(delta: float) -> void:
 				offset.y = randf_range(-shake_amount, shake_amount)
 		States.CHANGE_CELL:
 			pass
+	force_update_scroll()
+
+func initialize(wrsm_node_references: WRSMNodeReferences) -> void:
+	node_references = wrsm_node_references
 
 func follow_player(delta: float) -> void:
 	if not is_changing_cells(): 
-		global_position = lerp(global_position, WorldRegion.NodeReferences.PlayerScene.global_position, delta * follow_rate)
-		#global_position = WorldRegion.NodeReferences.PlayerScene.global_position
+		#global_position = lerp(global_position, node_references.player.global_position, delta * follow_rate)
+		global_position = node_references.player.global_position + Vector2(0, -12)
 
-func disable_camera_limits() -> void:
+func set_limits(top_limit: int, bottom_limit: int, left_limit: int, right_limit: int) -> void:
+	limit_top = top_limit
+	limit_bottom = bottom_limit
+	limit_left = left_limit
+	limit_right = right_limit
+
+func clear_limits() -> void:
 	limit_top = -10000000
 	limit_bottom = 10000000
 	limit_left = -10000000
 	limit_right = 10000000
-
-func set_camera_limits(limits: Array) -> void:
-	limit_top = limits[0].global_position.y
-	limit_bottom = limits[1].global_position.y
-	limit_left = limits[2].global_position.x
-	limit_right = limits[3].global_position.x
 
 func move_to_new_camera_target(new_camera_target: Vector2) -> void:
 	if ignore_first_room:
@@ -57,7 +59,7 @@ func move_to_new_camera_target(new_camera_target: Vector2) -> void:
 		# because global_position will always be at or near the Player here, it must be reset
 		# to the center of the current screen in order to prevent snapping
 		global_position = get_screen_center_position()
-		disable_camera_limits()
+		clear_limits()
 		var tween: Tween = get_tree().create_tween()
 		@warning_ignore("return_value_discarded")
 		tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
@@ -68,6 +70,11 @@ func move_to_new_camera_target(new_camera_target: Vector2) -> void:
 		tween.finished.connect(Callable(self, "_on_cell_change_completed"))
 		@warning_ignore("return_value_discarded")
 		cell_focus_started.emit()
+
+## NEW
+func snap_to_position(target_position: Vector2) -> void:
+	clear_limits()
+	global_position = target_position
 
 func _on_cell_change_completed() -> void:
 	current_state = States.FOLLOW_PLAYER

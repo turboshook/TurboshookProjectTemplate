@@ -1,23 +1,20 @@
 WRSM CHANGELOG
 
 ver 0.0.3 (Nitrogen)
-engine ver. v4.1.stable.official [970459615]
-	- Simplified world data initialization process. Now, World calls 
-	WorldRegion.initialize_world_data() and passes a reference to itself. 
-	WorldRegion then initializes world data, region data, and node references
-	based on World (which has direct tree access to all of this data). All of 
-	this data is now wiped when the world exits the SceneTree.
-	- Removed variable initialization signals from NodeReferences and removed 
+engine ver. v4.2.beta4.official [93cdacbb0]
+	- Removed WorldRegion autoload entirely and replciated its functionality 
+	primarily using signals.
+	- Added WRSMWorldDataDictionary Resource to define structure of the new
+	world_data components
+	- Simplified world data initialization process. 
+	- Updated NodeReferences Resource name to WRSMNodeReferences
+	- Removed variable initialization signals from WRSMNodeReferences and removed 
 	references to specialty container nodes thay may exist in a given RegionCell.
-	These should be referenced instead through WorldRegion.node_references's 
-	current_cell field because they will vary wildly from game to game. It does
-	not make sense to bundle that into this module.
 	- Removed extraneous camera limit markers. The limits on WorldCamera are now
 	set using a single Marker2D scene that is used to set both the bottom and 
 	rightmost camera limits of the RegionCell.
-	- WorldRegion now has a simple world_process boolean variable that can be 
-	used to limit Player/NPC/etc. actions during things like scene transitions.
 	- Updated variable naming and capitalization conventions.
+	- Currently laying groundwork for persistent scenes handling.
 
 ver 0.0.2 (Cryptid)
 engine ver. v4.0.2.stable.official [7a0977ce2]

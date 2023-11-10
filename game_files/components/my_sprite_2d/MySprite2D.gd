@@ -1,10 +1,21 @@
 extends Sprite2D
 class_name MySprite2D
 
-## When [param true], this scene will snap to the rounded [param global_position] of its parent.[br][br] 
-## Because this setting directly changes positional properties, any placement adjustments made in-editor 
-## to assigned textures should be done using the [param offset] property.
-@export var pixel_snap_fix: bool = true
+## Indicates the behavior of this node with regard to pixel snapping.
+enum PixelSnapMode {
+	## No attempt in-node pixel snapping is made, consistent with default [Sprite2D] behavior.
+	NONE, 
+	## Snap to the rounded [param global_position] of its parent scene every process frame. 
+	PARENT,
+	## Same as [param PixelSnapMode.PARENT], but adds any provided [param offset] to the 
+	## new rounded [param global_position]. Useful for when this node is parented by some
+	## [Node2D] in order to have both an offset value and some non-origin axis of rotation.
+	## If you aren't rotating this node, don't worry about this.
+	PARENT_WITH_OFFSET
+}
+
+## Desired pixel snap behavior of this node.
+@export var pixel_snap_mode: PixelSnapMode = PixelSnapMode.PARENT
 
 var _parent_node: Node = null
 
@@ -22,15 +33,22 @@ var _total_shake_time: float = 0.0
 
 func _ready() -> void:
 	_original_offset = offset
-	if pixel_snap_fix:
-		_parent_node = get_parent()
+	_parent_node = get_parent()
+	if !(_parent_node is Node2D or _parent_node is Control) and pixel_snap_mode != PixelSnapMode.NONE:
+		printerr("MySprite2D @ _ready(): Parent node does not inherit from Node2D or Control and therefore has no positional data. Pixel snapping will not function.")
 
 func _process(_delta: float) -> void:
-	if pixel_snap_fix:
-		if _parent_node is Node2D or _parent_node is Control:
+	
+	if pixel_snap_mode == PixelSnapMode.NONE:
+		return
+	if (_parent_node is Node2D or _parent_node is Control):
+		return
+	
+	match pixel_snap_mode:
+		PixelSnapMode.PARENT:
 			global_position = _parent_node.global_position.round()
-		else:
-			global_position = global_position.round()
+		PixelSnapMode.PARENT_WITH_OFFSET:
+			global_position = (global_position + _original_offset).round()
 
 func _physics_process(delta: float) -> void:
 	if _flicker:

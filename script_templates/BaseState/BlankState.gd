@@ -1,7 +1,7 @@
 extends BaseState
 
 func enter() -> void:
-	super.enter()
+	pass
 
 func exit() -> void:
 	pass

@@ -41,9 +41,8 @@ func _process(_delta: float) -> void:
 	
 	if pixel_snap_mode == PixelSnapMode.NONE:
 		return
-	if (_parent_node is Node2D or _parent_node is Control):
-		return
 	
+	set_as_top_level(true)
 	match pixel_snap_mode:
 		PixelSnapMode.PARENT:
 			global_position = _parent_node.global_position.round()

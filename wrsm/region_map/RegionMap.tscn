@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://d2ea4f8s5en1r"]
 
-[ext_resource type="Script" path="res://game_files/wrsm/region_map/RegionMap.gd" id="1_m5xk2"]
+[ext_resource type="Script" path="res://wrsm/region_map/RegionMap.gd" id="1_m5xk2"]
 
 [node name="RegionMap" type="Node2D"]
 script = ExtResource("1_m5xk2")

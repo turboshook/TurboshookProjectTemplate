@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://cdlrvkhexnngh"]
 
-[ext_resource type="Script" path="res://game_files/wrsm/World.gd" id="1_yy1d5"]
-[ext_resource type="PackedScene" uid="uid://dhr36f7nqme2b" path="res://game_files/wrsm/world_camera/WorldCamera.tscn" id="2_2dijn"]
+[ext_resource type="Script" path="res://wrsm/World.gd" id="1_yy1d5"]
+[ext_resource type="PackedScene" uid="uid://dhr36f7nqme2b" path="res://wrsm/world_camera/WorldCamera.tscn" id="2_2dijn"]
 
 [node name="World" type="Node2D"]
 script = ExtResource("1_yy1d5")

@@ -1,0 +1,6 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://wrsm/resources/WRSMNodeReferences.gd" id="1_pxtex"]
+
+[resource]
+script = ExtResource("1_pxtex")

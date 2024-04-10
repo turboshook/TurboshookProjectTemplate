@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://bh3caugl4xawm"]
 
-[ext_resource type="Script" path="res://game_files/wrsm/cell_changer/CellChanger.gd" id="1"]
+[ext_resource type="Script" path="res://wrsm/cell_changer/CellChanger.gd" id="1"]
 
 [sub_resource type="RectangleShape2D" id="1"]
 size = Vector2(16, 12)

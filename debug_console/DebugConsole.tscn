@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://c8u47o4vpky6n"]
+
+[ext_resource type="Script" path="res://debug_console/DebugConsole.gd" id="1_43ytu"]
+
+[node name="DebugConsole" type="CanvasLayer"]
+process_mode = 3
+script = ExtResource("1_43ytu")
+
+[node name="ExpressionBase" type="Node" parent="."]

@@ -1,0 +1,12 @@
+[gd_resource type="Theme" load_steps=3 format=3 uid="uid://bf6dlyqc2txvw"]
+
+[ext_resource type="StyleBox" uid="uid://bjsyjqge4pbu6" path="res://debug_console/resources/line_edit_stylebox.tres" id="1_kdlh0"]
+[ext_resource type="FontFile" uid="uid://bvrigdpskny64" path="res://debug_console/import/PixelOperatorMono8.ttf" id="2_oynns"]
+
+[resource]
+default_font = ExtResource("2_oynns")
+default_font_size = 8
+Label/constants/line_spacing = 2
+LineEdit/styles/focus = ExtResource("1_kdlh0")
+LineEdit/styles/normal = ExtResource("1_kdlh0")
+VBoxContainer/constants/separation = 2

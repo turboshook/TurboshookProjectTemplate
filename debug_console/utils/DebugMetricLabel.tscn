@@ -1,0 +1,41 @@
+[gd_scene load_steps=3 format=3 uid="uid://k0ldp3q2vaw8"]
+
+[ext_resource type="Theme" uid="uid://bf6dlyqc2txvw" path="res://debug_console/resources/debug_console_theme.tres" id="1_7koev"]
+[ext_resource type="Script" path="res://debug_console/utils/DebugMetricLabel.gd" id="2_s3t1g"]
+
+[node name="DebugMetricLabel" type="Control"]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 160.0
+offset_bottom = 10.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_7koev")
+script = ExtResource("2_s3t1g")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 0
+metadata/_edit_lock_ = true
+
+[node name="MetricName" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+text = "MetricName"
+horizontal_alignment = 2
+metadata/_edit_lock_ = true
+
+[node name="Padding" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+text = " "
+metadata/_edit_lock_ = true
+
+[node name="MetricValue" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+text = "Value"
+metadata/_edit_lock_ = true

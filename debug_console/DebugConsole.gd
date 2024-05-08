@@ -26,7 +26,9 @@ var _console_output: Label = null
 var _console_output_base_height: float = 0.0
 var _console_input: LineEdit = null
 
-# Example of properly-initialized command:
+var _metrics_labels: Dictionary = {}
+
+# Example of command in commands.json:
 # 
 # "command_text": {
 #	"arg_count": x,
@@ -60,6 +62,7 @@ func _build_metric_layer() -> void:
 	add_child(_metrics_container)
 	_metrics_container.name = "MetricsContainer"
 	_metrics_container.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_metrics_container.theme = load("res://debug_console/resources/debug_console_theme.tres")
 	
 	# LeftPanel
 	var left_metrics_panel: VBoxContainer = VBoxContainer.new()
@@ -93,12 +96,19 @@ func _init_builtin_metrics() -> void:
 	init_metric("mem", _debug_get_static_memory_usage, false)
 
 func init_metric(metric_name: String, update_callable: Callable, left_panel: bool = true) -> void:
+	# metric already exists
+	if metric_name in _metrics_labels.keys():
+		_metrics_labels[metric_name].init(metric_name, update_callable)
+		return
+	
+	# new metric
 	var metric_label: Control = load(DEBUG_METRIC_LABEL_PATH).instantiate()
 	if left_panel:
 		_metrics_container.get_node("LeftPanel").add_child(metric_label)
 	else:
 		_metrics_container.get_node("RightPanel").add_child(metric_label)
 		metric_label.h_box_container.alignment = BoxContainer.AlignmentMode.ALIGNMENT_END
+	_metrics_labels[metric_name] = metric_label
 	metric_label.init(metric_name, update_callable)
 
 func _build_console() -> void:

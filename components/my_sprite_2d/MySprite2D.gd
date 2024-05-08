@@ -3,14 +3,20 @@ class_name MySprite2D
 
 ## Indicates the behavior of this node with regard to pixel snapping.
 enum PixelSnapMode {
-	## No attempt in-node pixel snapping is made, consistent with default [Sprite2D] behavior.
+	## No attempt at pixel snapping is made, consistent with default [Sprite2D] behavior.
 	NONE, 
 	## Snap to the rounded [param global_position] of its parent scene every process frame. 
 	PARENT,
 	## Same as [param PixelSnapMode.PARENT], but adds any provided [param offset] to the 
 	## new rounded [param global_position]. Useful for when this node is parented by some
-	## [Node2D] in order to have both an offset value and some non-origin axis of rotation.
-	## If you aren't rotating this node, don't worry about this.
+	## [Node2D] in order to have both an offset value and some non-origin axis of rotation.[br][br]
+	##
+	## This setting will set the [param offset] value to [param Vector2.ZERO] on 
+	## [method Node._ready] and relies on a zero [param offset] after this point
+	## in order to function correctly. For this reason, changing to this [enum PixelSnapMode]
+	## while the application is running will result in behavior you probably do not want.[br][br]
+	##
+	## If you aren't rotating this node, this setting does not apply to you.
 	PARENT_WITH_OFFSET
 }
 
@@ -35,7 +41,9 @@ func _ready() -> void:
 	_original_offset = offset
 	_parent_node = get_parent()
 	if !(_parent_node is Node2D or _parent_node is Control) and pixel_snap_mode != PixelSnapMode.NONE:
-		printerr("MySprite2D @ _ready(): Parent node does not inherit from Node2D or Control and therefore has no positional data. Pixel snapping will not function.")
+		push_warning("MySprite2D @ _ready(): Parent node does not inherit from Node2D or Control and therefore has no positional data. Pixel snapping will not function.")
+	if pixel_snap_mode == PixelSnapMode.PARENT_WITH_OFFSET:
+		offset = Vector2.ZERO
 
 func _process(_delta: float) -> void:
 	
@@ -47,7 +55,7 @@ func _process(_delta: float) -> void:
 		PixelSnapMode.PARENT:
 			global_position = _parent_node.global_position.round()
 		PixelSnapMode.PARENT_WITH_OFFSET:
-			global_position = (global_position + _original_offset).round()
+			global_position = (_parent_node.global_position + _original_offset).round()
 
 func _physics_process(delta: float) -> void:
 	if _flicker:
@@ -80,7 +88,7 @@ func _handle_sprite_flicker(delta: float) -> void:
 			visible = !visible
 			_current_flicker_interval = 0.0
 
-func start_sprite_shake(shake_amount: float, shake_time: float) -> void:
+func start_sprite_shake(shake_amount: float = 2.0, shake_time: float = 0.5) -> void:
 	_shake_amount = shake_amount
 	_shake_time = shake_time
 	_total_shake_time = 0.0
@@ -88,16 +96,24 @@ func start_sprite_shake(shake_amount: float, shake_time: float) -> void:
 
 func stop_sprite_shake() -> void:
 	_sprite_shake = false
-	offset = _original_offset
+	if pixel_snap_mode == PixelSnapMode.PARENT_WITH_OFFSET:
+		offset = Vector2.ZERO
+	else:
+		offset = _original_offset
 
 func _handle_sprite_shake(delta: float) -> void:
 	_total_shake_time += delta
 	if _total_shake_time >= _shake_time:
 		stop_sprite_shake()
+		return
+	
+	var rand_offset_x: float = randf_range(-_shake_amount, _shake_amount)
+	var rand_offset_y: float = randf_range(-_shake_amount, _shake_amount)
+	
+	if pixel_snap_mode == PixelSnapMode.PARENT_WITH_OFFSET:
+		offset = Vector2(rand_offset_x, rand_offset_y)
 	else:
-		var offset_x: float = randf_range(-_shake_amount, _shake_amount)
-		var offset_y: float = randf_range(-_shake_amount, _shake_amount)
-		offset = Vector2(_original_offset.x + offset_x, _original_offset.y + offset_y)
+		offset = Vector2(_original_offset.x + rand_offset_x, _original_offset.y + rand_offset_y)
 
 func flash(ramp_down_time: float = 0.1) -> void:
 	# https://www.reddit.com/r/godot/comments/y8n1wa/is_it_possible_to_make_a_sprite_flash_white_using/

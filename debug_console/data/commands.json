@@ -1,7 +1,39 @@
 {
-	"clearout": {},
-	"clearhist": {},
-	"clearall": {},
-	"metrics": {},
-	"newline": {}
+	"help": {
+		"base": "true", 
+		"explain_text": "Writes some useful tips on getting started to the console output."
+	},
+	"commandlist": {
+		"base": "true",
+		"explain_text": "Lists all commands in the database."
+	},
+	"explain": {
+		"base": "true", 
+		"arg_count": 1,
+		"explain_text": "Takes one command as an argument and returns the explain text for that command."
+	},
+	"clearout": {
+		"base": "true",
+		"explain_text": "Erases all console output."
+	},
+	"clearhist": {
+		"base": "true",
+		"explain_text": "Erases the command history."
+	},
+	"clearall": {
+		"base": "true",
+		"explain_text": "Erases both command history and console output."
+	},
+	"metrics": {
+		"base": "true",
+		"explain_text": "Toggles visibility of debug metrics."
+	},
+	"newline": {
+		"base": "true",
+		"explain_text": "Logs an empty line to the console."
+	},
+	"loremipsum": {
+		"base": "true",
+		"explain_text": "Prints a paragraph of text."
+	}
 }

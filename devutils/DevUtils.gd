@@ -1,19 +1,22 @@
 extends CanvasLayer
 
-const COMMAND_FILE_PATH: String = "res://debug_console/data/commands.json"
-const VERSION_TEXT: String = " -- ShookStation -- [v0.0.1]\n "
-const COMMAND_TAG: String = "-> "
-const RETURN_VALUE_TAG: String = "<- "
-const ERROR_TAG: String = " x "
-const DEFAULT_MISSING_BASE_ERROR: String = "missing base for [command]"
-const DEFAULT_UNKNOWN_COMMAND_ERROR: String = "unknown command"
-const DEFAULT_ARGUMENT_COUNT_ERROR: String = "arg count mismatch"
-const DEFAULT_ARGUMENT_TYPE_MISMATCH_ERROR: String = "arg type mismatch"
-const EXPRESSION_EVALUATION_TAG: String = "exp"
-const DEBUG_METRIC_LABEL_PATH: String = "res://debug_console/utils/DebugMetricLabel.tscn"
+const VERSION_TEXT: String = 					" -- DevUtils -- [v0.0.2]\n "
+const COMMAND_TAG: String = 					"-> "
+const RETURN_VALUE_TAG: String = 				"<- "
+const ERROR_TAG: String = 						" x "
+const EXPRESSION_EVALUATION_TAG: String = 		"exp"
+
+const DEBUG_METRIC_LABEL_PATH: String = 		"res://devutils/utils/DebugMetricLabel.tscn"
 const OUTPUT_SCROLL_INCREMENT: float = 10.0
-const HELP_TEXT: String = "Hello! Use the 'commandlist' command to see all commands in the database. To learn about a specific command, type 'explain' followed by that command's name. I hope this helps you!"
-const LOREM_IPSUM: String = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla malesuada sed tortor sed sagittis. Duis mattis at magna non volutpat. Phasellus ut metus dignissim, tempus arcu at, fermentum velit. Phasellus tincidunt dapibus massa, at ultrices nunc lobortis eu. Fusce ac nisi porttitor, molestie tortor ut, posuere ligula."
+
+const ERROR_MISSING_BASE: String = 				"missing base for [command]"
+const ERROR_UNKNOWN_COMMAND: String = 			"unknown command"
+const ERROR_ARGUMENT_COUNT: String = 			"arg count mismatch"
+const ERROR_ARGUMENT_TYPE_MISMATCH: String = 	"arg type mismatch"
+const ERROR_BLACKLISTED_FUNCTION: String = 		"function not allowed: "
+
+const HELP_TEXT: String = 						"Hello! Use the 'commandlist' command to see all commands in the database. To learn about a specific command, type 'explain' followed by that command's name. I hope this helps you!"
+const LOREM_IPSUM: String = 					"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla malesuada sed tortor sed sagittis. Duis mattis at magna non volutpat. Phasellus ut metus dignissim, tempus arcu at, fermentum velit. Phasellus tincidunt dapibus massa, at ultrices nunc lobortis eu. Fusce ac nisi porttitor, molestie tortor ut, posuere ligula."
 
 enum ArgTypes {
 	INT,
@@ -29,8 +32,11 @@ var _console_container: Control = null
 var _console_output: Label = null
 var _console_output_base_height: float = 0.0
 var _console_input: LineEdit = null
-
 var _metrics_labels: Dictionary = {}
+var _command_history: Array[String] = []
+var _command_history_index: int = 0
+var _base_viewport_size: Vector2 = Vector2.ZERO
+var _debug_theme: Theme = null
 
 # Example of a command in commands.json:
 # 
@@ -44,17 +50,12 @@ var _metrics_labels: Dictionary = {}
 # The "arg_types" and "callable" keys are added on initialization
 
 var _command_dictionary: Dictionary = {}
-
-var _command_history: Array[String] = []
-var _command_history_index: int = 0
-
-var base_viewport_size: Vector2 = Vector2.ZERO
-var debug_theme: Theme = null
+var _function_blacklist: Array = []
 
 func _ready() -> void:
 	
-	base_viewport_size = get_viewport().content_scale_size
-	debug_theme = load("res://debug_console/resources/debug_console_theme.tres")
+	_base_viewport_size = get_viewport().content_scale_size
+	_debug_theme = load("res://devutils/resources/devutils_theme.tres")
 	
 	# Metrics
 	_build_metric_layer()
@@ -63,6 +64,7 @@ func _ready() -> void:
 	# Console
 	_build_console()
 	_import_command_dictionary()
+	_import_function_blacklist()
 	_init_builtin_commands()
 	_clear_output()
 
@@ -73,7 +75,7 @@ func _build_metric_layer() -> void:
 	add_child(_metrics_container)
 	_metrics_container.name = "MetricsContainer"
 	_metrics_container.set_anchors_preset(Control.PRESET_FULL_RECT)
-	_metrics_container.theme = debug_theme
+	_metrics_container.theme = _debug_theme
 	
 	# LeftPanel
 	var left_metrics_panel: VBoxContainer = VBoxContainer.new()
@@ -81,8 +83,8 @@ func _build_metric_layer() -> void:
 	left_metrics_panel.name = "LeftPanel"
 	left_metrics_panel.set_anchors_preset(Control.PRESET_LEFT_WIDE)
 	left_metrics_panel.custom_minimum_size = Vector2(
-		base_viewport_size.x * 0.5,
-		base_viewport_size.y
+		_base_viewport_size.x * 0.5,
+		_base_viewport_size.y
 	)
 	left_metrics_panel.position = Vector2.ZERO
 	
@@ -92,11 +94,11 @@ func _build_metric_layer() -> void:
 	right_metrics_panel.name = "RightPanel"
 	right_metrics_panel.set_anchors_preset(Control.PRESET_RIGHT_WIDE)
 	right_metrics_panel.custom_minimum_size = Vector2(
-		base_viewport_size.x * 0.5,
-		base_viewport_size.y
+		_base_viewport_size.x * 0.5,
+		_base_viewport_size.y
 	)
 	right_metrics_panel.position = Vector2(
-		base_viewport_size.x * 0.5,
+		_base_viewport_size.x * 0.5,
 		0.0
 	) 
 	
@@ -128,17 +130,17 @@ func _build_console() -> void:
 	_console_container = Control.new()
 	add_child(_console_container)
 	_console_container.name = "ConsoleContainer"
-	_console_container.size = base_viewport_size
+	_console_container.size = _base_viewport_size
 	_console_container.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_console_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_console_container.theme = debug_theme
+	_console_container.theme = _debug_theme
 	
 	# Background
 	var console_background: ColorRect = ColorRect.new()
 	_console_container.add_child(console_background)
 	console_background.name = "Background"
 	console_background.set_deferred("anchors_preset", Control.PRESET_FULL_RECT)
-	console_background.size = base_viewport_size
+	console_background.size = _base_viewport_size
 	console_background.color = Color("55555555")
 	console_background.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	
@@ -150,10 +152,10 @@ func _build_console() -> void:
 	_console_output.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_console_output.set_deferred("anchors_preset", Control.PRESET_BOTTOM_WIDE)
 	_console_output.custom_minimum_size = Vector2(
-		base_viewport_size.x,
-		base_viewport_size.y - 20.0
+		_base_viewport_size.x,
+		_base_viewport_size.y - 20.0
 	)
-	_console_output_base_height = base_viewport_size.y - 20.0
+	_console_output_base_height = _base_viewport_size.y - 20.0
 	_console_output.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_console_output.resized.connect(_on_console_output_resized)
 	
@@ -163,8 +165,8 @@ func _build_console() -> void:
 	_console_input.name = "ConsoleInput"
 	_console_input.set_caret_blink_enabled(true)
 	_console_input.set_caret_blink_interval(0.25)
-	_console_input.size = Vector2(base_viewport_size.x, 20.0)
-	_console_input.position = Vector2(0.0, base_viewport_size.y - 20.0)
+	_console_input.size = Vector2(_base_viewport_size.x, 20.0)
+	_console_input.position = Vector2(0.0, _base_viewport_size.y - 20.0)
 	_console_input.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
 	_console_input.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	
@@ -173,22 +175,34 @@ func _build_console() -> void:
 	_console_container.visible = false
 
 func _import_command_dictionary() -> void:
-	if !FileAccess.file_exists(COMMAND_FILE_PATH):
-		printerr("DebugConsole @ _import_command_dictionary(): COMMAND_FILE_PATH is invalid.")
+	if !FileAccess.file_exists("res://devutils/data/commands.json"):
+		printerr("DevUtils @ _import_command_dictionary(): COMMAND_FILE_PATH is invalid.")
 		return
-	var file_access: FileAccess = FileAccess.open(COMMAND_FILE_PATH, FileAccess.READ)
+	var file_access: FileAccess = FileAccess.open("res://devutils/data/commands.json", FileAccess.READ)
 	_command_dictionary = JSON.parse_string(file_access.get_as_text())
 	file_access.close()
 	if _command_dictionary == null:
-		printerr("DebugConsole @ _import_command_dictionary(): commands.json failed to parse, make sure it is formatted correctly!")
+		printerr("DevUtils @ _import_command_dictionary(): commands.json failed to parse, make sure it is formatted correctly!")
 		return
 	for command_string in _command_dictionary.keys():
 		if !_command_dictionary[command_string].has("arg_count"):
 			_command_dictionary[command_string]["arg_count"] = 0
 		if !_command_dictionary[command_string].has("missing_base_error"):
-			_command_dictionary[command_string]["missing_base_error"] = DEFAULT_MISSING_BASE_ERROR
+			_command_dictionary[command_string]["missing_base_error"] = ERROR_MISSING_BASE
 		_command_dictionary[command_string]["arg_types"] = []
 		_command_dictionary[command_string]["callable"] = null
+
+func _import_function_blacklist() -> void:
+	if !FileAccess.file_exists("res://devutils/data/function_blacklist.json"):
+		printerr("DevUtils @ _import_function_blacklist(): file path is invalid.")
+		return
+	var file_access: FileAccess = FileAccess.open("res://devutils/data/function_blacklist.json", FileAccess.READ)
+	var dictionary: Dictionary = JSON.parse_string(file_access.get_as_text())
+	_function_blacklist = dictionary["expressions"]
+	file_access.close()
+	if _function_blacklist == null:
+		printerr("DevUtils @ _import_function_blacklist(): function_blacklist.json failed to parse, make sure it is formatted correctly!")
+		return
 
 func _init_builtin_commands() -> void:
 	init_command("help", _debug_help)
@@ -200,14 +214,15 @@ func _init_builtin_commands() -> void:
 	init_command("metrics", _show_metrics)
 	init_command("newline", _log_empty_line)
 	init_command("loremipsum", _debug_lorem_ipsum)
+	init_command("forcequit", get_tree().quit)
 
 func init_command(command_string: String, callable: Callable, args: Array[ArgTypes] = []) -> void:
 	command_string = command_string.replace(" ", "")
 	if !_command_dictionary.has(command_string):
-		printerr("DebugConsole @ init_command(): Failed to init command ", command_string, " as it does not exist in commands.json.")
+		printerr("DevUtils @ init_command(): Failed to init command ", command_string, " as it does not exist in commands.json.")
 		return
 	if args.size() != _command_dictionary[command_string]["arg_count"]:
-		printerr("DebugConsole @ init_command(): Failed to init command ", command_string, ". Expected ", _command_dictionary[command_string]["arg_count"], " arguments, but was provided ", args.size(), ".")
+		printerr("DevUtils @ init_command(): Failed to init command ", command_string, ". Expected ", _command_dictionary[command_string]["arg_count"], " arguments, but was provided ", args.size(), ".")
 		return
 	for arg_type in args:
 		_command_dictionary[command_string]["arg_types"].append(arg_type)
@@ -226,9 +241,9 @@ func _input(event: InputEvent) -> void:
 		elif event.is_action_pressed("ui_page_down"):
 			_scroll_output(-1)
 		
-		if event.is_action_pressed("debug_console"): 
+		if event.is_action_pressed("devutils"): 
 			_close_console()
-	elif event.is_action_pressed("debug_console"):
+	elif event.is_action_pressed("devutils"):
 		_open_console()
 
 func _check_history(index_change: int) -> void:
@@ -250,7 +265,7 @@ func _scroll_output(scroll_direction: int) -> void:
 	_console_output.position.y = clamp(
 		_console_output.position.y, 
 		(_console_output_base_height - _console_output.size.y), 
-		debug_theme.get("Label/constants/line_spacing")
+		_debug_theme.get("Label/constants/line_spacing")
 	) 
 	# account for the X pixels of line spacing in Label
 	# this is because a Label collapses all free whitespace ABOVE the first line
@@ -298,7 +313,7 @@ func _handle_command(command_text: String) -> String:
 	if words[0] == "exp": return _handle_expression(command_text)
 
 	if !_command_dictionary.has(words[0]):
-		_console_log(str(ERROR_TAG, DEFAULT_UNKNOWN_COMMAND_ERROR, " '", words[0], "'"))
+		_console_log(str(ERROR_TAG, ERROR_UNKNOWN_COMMAND, " '", words[0], "'"))
 		return ""
 	
 	var command: Dictionary = _command_dictionary[words[0]]
@@ -316,7 +331,7 @@ func _handle_command(command_text: String) -> String:
 	
 	if command_args.size() != command["arg_count"]:
 		var info: String = str(" (expected ", command["arg_count"], ", received ", command_args.size(), ")")
-		_console_log(str(ERROR_TAG, DEFAULT_ARGUMENT_COUNT_ERROR, info))
+		_console_log(str(ERROR_TAG, ERROR_ARGUMENT_COUNT, info))
 		return ""
 	
 	if command_text != "newline":
@@ -332,7 +347,7 @@ func _handle_command(command_text: String) -> String:
 		var arg_type: int = _get_arg_type(command_args[i])
 		if arg_type != command["arg_types"][i]:
 			var info: String = str(" (expected ", _get_type_string(command["arg_types"][i]), ", received ", _get_type_string(arg_type), " at position ", i, ")")
-			_console_log(str(ERROR_TAG, DEFAULT_ARGUMENT_TYPE_MISMATCH_ERROR, info))
+			_console_log(str(ERROR_TAG, ERROR_ARGUMENT_TYPE_MISMATCH, info))
 			return ""
 		cast_args.append(_cast_type(command_args[i], arg_type))
 	
@@ -364,6 +379,10 @@ func _handle_expression(command_text: String) -> String:
 	_console_log(command_text)
 	#var expression_command: String = _format_string(command_text)
 	var expression_text: String = command_text.lstrip(str(EXPRESSION_EVALUATION_TAG, " "))
+	var blacklisted_function: String = _get_blacklisted_function(expression_text)
+	if blacklisted_function != "":
+		_console_log(str(ERROR_TAG, ERROR_BLACKLISTED_FUNCTION, blacklisted_function))
+		return ""
 	var expression: Expression = Expression.new()
 	var error: Error = expression.parse(expression_text)
 	if error != OK:
@@ -376,6 +395,12 @@ func _handle_expression(command_text: String) -> String:
 	if result is Object:
 		return ""
 	return str(result)
+
+func _get_blacklisted_function(expression_text: String) -> String:
+	for function in _function_blacklist:
+		if function in expression_text:
+			return function
+	return ""
 
 func _clear_output() -> void:
 	_console_output.text = ""

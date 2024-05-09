@@ -1,0 +1,8 @@
+{
+	"expressions": [
+		"get_parent()",
+		"get_child()",
+		"get_node()",
+		"queue_free()"
+	]
+}

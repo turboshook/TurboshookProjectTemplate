@@ -35,5 +35,9 @@
 	"loremipsum": {
 		"base": "true",
 		"explain_text": "Prints a paragraph of text."
+	},
+	"forcequit": {
+		"base": "true",
+		"explain_text": "Closes the game directly through the SceneTree."
 	}
 }

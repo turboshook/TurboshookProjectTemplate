@@ -1,6 +1,6 @@
 extends CanvasLayer
 
-const VERSION_TEXT: String = 					" -- DevUtils -- [v0.0.2]\n "
+const VERSION_TEXT: String = 					" -- DevUtils -- [v0.0.3]\n "
 const COMMAND_TAG: String = 					"-> "
 const RETURN_VALUE_TAG: String = 				"<- "
 const ERROR_TAG: String = 						" x "
@@ -17,6 +17,8 @@ const ERROR_BLACKLISTED_FUNCTION: String = 		"function not allowed: "
 
 const HELP_TEXT: String = 						"Hello! Use the 'commandlist' command to see all commands in the database. To learn about a specific command, type 'explain' followed by that command's name. I hope this helps you!"
 const LOREM_IPSUM: String = 					"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla malesuada sed tortor sed sagittis. Duis mattis at magna non volutpat. Phasellus ut metus dignissim, tempus arcu at, fermentum velit. Phasellus tincidunt dapibus massa, at ultrices nunc lobortis eu. Fusce ac nisi porttitor, molestie tortor ut, posuere ligula."
+
+const SCROLL_HOLD_TIME: float = 0.25
 
 enum ArgTypes {
 	INT,
@@ -51,6 +53,9 @@ var _debug_theme: Theme = null
 
 var _command_dictionary: Dictionary = {}
 var _function_blacklist: Array = []
+
+var _hold_accumulator: float = 0.0
+var _scroll_direction: int = 0
 
 func _ready() -> void:
 	
@@ -236,15 +241,31 @@ func _input(event: InputEvent) -> void:
 		elif event.is_action_pressed("ui_down"):
 			_check_history(1)
 		
-		if event.is_action_pressed("ui_page_up"):
-			_scroll_output(1)
-		elif event.is_action_pressed("ui_page_down"):
-			_scroll_output(-1)
-		
 		if event.is_action_pressed("devutils"): 
 			_close_console()
 	elif event.is_action_pressed("devutils"):
 		_open_console()
+
+func _physics_process(delta: float) -> void:
+	var scroll_released: bool = (Input.is_action_just_released("ui_page_up") or Input.is_action_just_released("ui_page_down"))
+	var both_held: bool = (Input.is_action_pressed("ui_page_up") and Input.is_action_pressed("ui_page_down"))
+	
+	if scroll_released or both_held:
+		_scroll_direction = 0
+		_hold_accumulator = 0.0
+		return
+	
+	if Input.is_action_just_pressed("ui_page_up"):
+		_scroll_direction = 1
+		_scroll_output(_scroll_direction)
+	elif Input.is_action_just_pressed("ui_page_down"):
+		_scroll_direction = -1
+		_scroll_output(_scroll_direction)
+	
+	if _scroll_direction != 0:
+		_hold_accumulator += delta
+		if _hold_accumulator >= SCROLL_HOLD_TIME:
+			_scroll_output(_scroll_direction)
 
 func _check_history(index_change: int) -> void:
 	_command_history_index += index_change
@@ -428,6 +449,9 @@ func _debug_help() -> String:
 	return HELP_TEXT
 
 func _debug_explain(command_name: String) -> String:
+	var valid_commands: Array = _command_dictionary.keys()
+	if command_name not in valid_commands:
+		return str("'", command_name, "' is not a recognized command.")
 	var command: Dictionary = _command_dictionary[command_name]
 	if not command.has("explain_text"):
 		return "no explain text provided :("

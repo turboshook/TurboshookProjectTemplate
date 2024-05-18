@@ -1,13 +1,17 @@
 extends CanvasLayer
 
-const VERSION_TEXT: String = 					" -- DevUtils -- [v0.0.3]\n "
+const VERSION_TEXT: String = 					" -- DevUtils [v0.0.4] --\n "
 const COMMAND_TAG: String = 					"-> "
 const RETURN_VALUE_TAG: String = 				"<- "
 const ERROR_TAG: String = 						" x "
+const INFO_COLOR: Color = 						Color.YELLOW
+const COMMAND_COLOR: Color = 					Color.GRAY
+const RETURN_VALUE_COLOR: Color = 				Color.WHITE
+const ERROR_COLOR: Color = 						Color.RED
 const EXPRESSION_EVALUATION_TAG: String = 		"exp"
 
 const DEBUG_METRIC_LABEL_PATH: String = 		"res://devutils/utils/DebugMetricLabel.tscn"
-const OUTPUT_SCROLL_INCREMENT: float = 10.0
+const OUTPUT_SCROLL_INCREMENT: float = 8.0
 
 const ERROR_MISSING_BASE: String = 				"missing base for [command]"
 const ERROR_UNKNOWN_COMMAND: String = 			"unknown command"
@@ -27,11 +31,18 @@ enum ArgTypes {
 	FLOAT
 }
 
+enum LogTypes {
+	INFO,
+	COMMAND,
+	RETURN_VALUE,
+	ERROR
+}
+
 @onready var _expression_base: Node = $ExpressionBase
 
 var _metrics_container: Control = null
 var _console_container: Control = null
-var _console_output: Label = null
+var _console_output: RichTextLabel = null
 var _console_output_base_height: float = 0.0
 var _console_input: LineEdit = null
 var _metrics_labels: Dictionary = {}
@@ -150,17 +161,19 @@ func _build_console() -> void:
 	console_background.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	
 	# ConsoleOutput
-	_console_output = Label.new()
+	_console_output = RichTextLabel.new()
 	_console_container.add_child(_console_output)
 	_console_output.name = "ConsoleOutput"
-	_console_output.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
+	_console_output.fit_content = true
+	_console_output.scroll_active = false
+	_console_output.scroll_following = true
 	_console_output.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_console_output.set_deferred("anchors_preset", Control.PRESET_BOTTOM_WIDE)
 	_console_output.custom_minimum_size = Vector2(
 		_base_viewport_size.x,
-		_base_viewport_size.y - 20.0
+		_base_viewport_size.y - 16.0
 	)
-	_console_output_base_height = _base_viewport_size.y - 20.0
+	_console_output_base_height = _base_viewport_size.y - 16.0
 	_console_output.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_console_output.resized.connect(_on_console_output_resized)
 	
@@ -170,8 +183,8 @@ func _build_console() -> void:
 	_console_input.name = "ConsoleInput"
 	_console_input.set_caret_blink_enabled(true)
 	_console_input.set_caret_blink_interval(0.25)
-	_console_input.size = Vector2(_base_viewport_size.x, 20.0)
-	_console_input.position = Vector2(0.0, _base_viewport_size.y - 20.0)
+	_console_input.size = Vector2(_base_viewport_size.x, 16.0)
+	_console_input.position = Vector2(0.0, _base_viewport_size.y - 16.0)
 	_console_input.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
 	_console_input.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	
@@ -280,22 +293,14 @@ func _check_history(index_change: int) -> void:
 
 func _scroll_output(scroll_direction: int) -> void:
 	# return if no resizing due to text
-	if _console_output.position.y == 0.0: 
+	if _console_output.size.y == _console_output_base_height: 
 		return
 	_console_output.position.y += OUTPUT_SCROLL_INCREMENT * scroll_direction
 	_console_output.position.y = clamp(
 		_console_output.position.y, 
 		(_console_output_base_height - _console_output.size.y), 
-		_debug_theme.get("Label/constants/line_spacing")
+		0.0
 	) 
-	# account for the X pixels of line spacing in Label
-	# this is because a Label collapses all free whitespace ABOVE the first line
-	# of text when it is resized to accommodate new lines, moving the effective
-	# starting position by those pixels. As far as I know, there is not a way to 
-	# override this behavior.
-	# It is stuff like this that makes me worry about portability...
-	
-	# JUST MOVE THIS BY ONE PIXEL EVERY TIME, ALLOW FOR HOLDING THE KEY DOWN
 
 func is_open() -> bool:
 	if not _console_container: return false
@@ -310,8 +315,28 @@ func _close_console() -> void:
 	get_tree().paused = false
 	_console_container.visible = false
 
-func _console_log(log_text: String = "") -> void:
-	_console_output.text += "\n" + str(log_text)
+func _console_log(log_text: String, log_type: LogTypes) -> void:
+	var output_string: String = str(log_text)
+	match log_type:
+		LogTypes.INFO:
+			_console_output.push_color(INFO_COLOR)
+			_console_output.append_text(str("\n", output_string))
+			_console_output.pop()
+		LogTypes.COMMAND:
+			output_string = str(COMMAND_TAG, output_string)
+			_console_output.push_color(COMMAND_COLOR)
+			_console_output.append_text(str("\n", output_string))
+			_console_output.pop()
+		LogTypes.RETURN_VALUE:
+			output_string = str(RETURN_VALUE_TAG, output_string)
+			_console_output.push_color(RETURN_VALUE_COLOR)
+			_console_output.append_text(str("\n", output_string))
+			_console_output.pop()
+		LogTypes.ERROR:
+			output_string = str(ERROR_TAG, output_string)
+			_console_output.push_color(ERROR_COLOR)
+			_console_output.append_text(str("\n", output_string))
+			_console_output.pop()
 
 func _on_console_output_resized() -> void:
 	# simulate scroll
@@ -324,26 +349,32 @@ func _on_console_input_submitted(new_text: String) -> void:
 	_console_input.text = ""
 	_command_history.append(new_text)
 	_command_history_index = _command_history.size()
-	var result: String = _handle_command(new_text)
-	if result != "":
-		_console_log(str(RETURN_VALUE_TAG, result))
+	_handle_command(new_text)
+	#if result != "":
+		#_console_log(result, LogTypes.RETURN_VALUE)
 
-func _handle_command(command_text: String) -> String:
+func _handle_command(command_text: String) -> void:
 	var words: PackedStringArray = command_text.split(" ", false)
-	if words.size() == 0: return ""
-	if words[0] == "exp": return _handle_expression(command_text)
-
+	if words.size() == 0: return
+	
+	if words[0] == "exp": 
+		_handle_expression(command_text)
+		return 
+	
+	if command_text != "newline":
+		_console_log(command_text, LogTypes.COMMAND)
+	
 	if !_command_dictionary.has(words[0]):
-		_console_log(str(ERROR_TAG, ERROR_UNKNOWN_COMMAND, " '", words[0], "'"))
-		return ""
+		_console_log(str(ERROR_UNKNOWN_COMMAND, " '", words[0], "'"), LogTypes.ERROR)
+		return
 	
 	var command: Dictionary = _command_dictionary[words[0]]
 	if command["callable"] == null or !command["callable"].is_valid():
 		var missing_base_error: String = command["missing_base_error"]
 		if missing_base_error.contains("[command]"):
 			missing_base_error = missing_base_error.replace("[command]", words[0])
-		_console_log(str(ERROR_TAG, missing_base_error))
-		return ""
+		_console_log(missing_base_error, LogTypes.ERROR)
+		return
 	
 	var command_args: Array[String] = []
 	for i in range(words.size()):
@@ -352,29 +383,27 @@ func _handle_command(command_text: String) -> String:
 	
 	if command_args.size() != command["arg_count"]:
 		var info: String = str(" (expected ", command["arg_count"], ", received ", command_args.size(), ")")
-		_console_log(str(ERROR_TAG, ERROR_ARGUMENT_COUNT, info))
-		return ""
-	
-	if command_text != "newline":
-		_console_log(str(COMMAND_TAG, command_text))
+		_console_log(str(ERROR_ARGUMENT_COUNT, info), LogTypes.ERROR)
+		return
 	
 	if command["arg_count"] == 0:
 		var no_arg_result: Variant = command["callable"].call()
-		if no_arg_result == null: return ""
-		return no_arg_result
+		if no_arg_result == null: return
+		_console_log(no_arg_result, LogTypes.RETURN_VALUE)
+		return
 	
 	var cast_args: Array = []
 	for i in range(command["arg_count"]):
 		var arg_type: int = _get_arg_type(command_args[i])
 		if arg_type != command["arg_types"][i]:
 			var info: String = str(" (expected ", _get_type_string(command["arg_types"][i]), ", received ", _get_type_string(arg_type), " at position ", i, ")")
-			_console_log(str(ERROR_TAG, ERROR_ARGUMENT_TYPE_MISMATCH, info))
-			return ""
+			_console_log(str(ERROR_ARGUMENT_TYPE_MISMATCH, info), LogTypes.ERROR)
+			return 
 		cast_args.append(_cast_type(command_args[i], arg_type))
 	
 	var arg_result: Variant = command["callable"].callv(cast_args)
-	if arg_result == null: return ""
-	return arg_result
+	if arg_result == null: return
+	_console_log(arg_result, LogTypes.RETURN_VALUE)
 
 func _get_arg_type(arg_string: String) -> ArgTypes:
 	if arg_string.is_valid_int(): return ArgTypes.INT
@@ -396,26 +425,24 @@ func _cast_type(arg_string: String, type: ArgTypes):
 	if type == ArgTypes.BOOL: return arg_string as bool
 	return "BAD CAST"
 
-func _handle_expression(command_text: String) -> String:
-	_console_log(command_text)
+func _handle_expression(command_text: String) -> void:
+	_console_log(command_text, LogTypes.COMMAND)
 	#var expression_command: String = _format_string(command_text)
 	var expression_text: String = command_text.lstrip(str(EXPRESSION_EVALUATION_TAG, " "))
 	var blacklisted_function: String = _get_blacklisted_function(expression_text)
 	if blacklisted_function != "":
-		_console_log(str(ERROR_TAG, ERROR_BLACKLISTED_FUNCTION, blacklisted_function))
-		return ""
+		_console_log(str(ERROR_BLACKLISTED_FUNCTION, blacklisted_function), LogTypes.ERROR)
+		return
 	var expression: Expression = Expression.new()
 	var error: Error = expression.parse(expression_text)
 	if error != OK:
-		_console_log(str(ERROR_TAG, expression.get_error_text()))
-		return ""
+		_console_log(str(expression.get_error_text()), LogTypes.ERROR)
+		return
 	var result: Variant = expression.execute([], _expression_base, false)
 	if expression.has_execute_failed():
-		_console_log(str(ERROR_TAG, "execution failed"))
-		return ""
-	if result is Object:
-		return ""
-	return str(result)
+		_console_log("execution failed", LogTypes.ERROR)
+		return
+	_console_log(str(result), LogTypes.RETURN_VALUE)
 
 func _get_blacklisted_function(expression_text: String) -> String:
 	for function in _function_blacklist:
@@ -424,10 +451,10 @@ func _get_blacklisted_function(expression_text: String) -> String:
 	return ""
 
 func _clear_output() -> void:
-	_console_output.text = ""
+	_console_output.clear()
 	_console_output.size = _console_output.custom_minimum_size
 	_console_output.position = Vector2.ZERO
-	_console_log(VERSION_TEXT)
+	_console_log(VERSION_TEXT, LogTypes.INFO)
 
 func _clear_history() -> void:
 	_command_history = []
@@ -440,9 +467,9 @@ func _clear_all() -> void:
 func _debug_commandlist() -> String:
 	var commands: Array = _command_dictionary.keys()
 	commands.sort()
-	var return_string: String = "\n"
+	var return_string: String = ""
 	for command in commands:
-		return_string += str(command, "\n")
+		return_string += str("\n", command)
 	return return_string
 
 func _debug_help() -> String:
@@ -461,10 +488,10 @@ func _show_metrics() -> void:
 	_metrics_container.visible = !_metrics_container.visible
 
 func _log_empty_line() -> void:
-	_console_log(" ")
+	_console_log(" ", LogTypes.RETURN_VALUE)
 
 func _debug_lorem_ipsum() -> void:
-	_console_log(str(RETURN_VALUE_TAG, LOREM_IPSUM))
+	_console_log(LOREM_IPSUM, LogTypes.RETURN_VALUE)
 
 func _debug_get_static_memory_usage() -> String:
 	return String.humanize_size(OS.get_static_memory_usage())

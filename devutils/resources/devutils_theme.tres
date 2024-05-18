@@ -9,4 +9,5 @@ default_font_size = 8
 Label/constants/line_spacing = 2
 LineEdit/styles/focus = ExtResource("1_kdlh0")
 LineEdit/styles/normal = ExtResource("1_kdlh0")
+RichTextLabel/colors/default_color = Color(1, 1, 1, 1)
 VBoxContainer/constants/separation = 2

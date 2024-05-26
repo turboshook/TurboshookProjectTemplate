@@ -43,7 +43,7 @@ enum LogTypes {
 var _metrics_container: Control = null
 var _console_container: Control = null
 var _console_output: RichTextLabel = null
-var _console_output_base_height: float = 0.0
+var _console_output_max_height: float = 0.0
 var _console_input: LineEdit = null
 var _metrics_labels: Dictionary = {}
 var _command_history: Array[String] = []
@@ -168,13 +168,15 @@ func _build_console() -> void:
 	_console_output.scroll_active = false
 	_console_output.scroll_following = true
 	_console_output.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_console_output.set_deferred("anchors_preset", Control.PRESET_BOTTOM_WIDE)
+	_console_output.size = Vector2(_base_viewport_size.x, 0.0)
 	_console_output.custom_minimum_size = Vector2(
 		_base_viewport_size.x,
-		_base_viewport_size.y - 16.0
+		#_base_viewport_size.y - 16.0
+		0.0
 	)
-	_console_output_base_height = _base_viewport_size.y - 16.0
+	_console_output.set_deferred("anchors_preset", Control.PRESET_BOTTOM_WIDE)
 	_console_output.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_console_output_max_height = _base_viewport_size.y - 16.0
 	_console_output.resized.connect(_on_console_output_resized)
 	
 	# ConsoleInput
@@ -185,7 +187,7 @@ func _build_console() -> void:
 	_console_input.set_caret_blink_interval(0.25)
 	_console_input.size = Vector2(_base_viewport_size.x, 16.0)
 	_console_input.position = Vector2(0.0, _base_viewport_size.y - 16.0)
-	_console_input.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
+	_console_input.set_deferred("anchors_preset", Control.PRESET_BOTTOM_WIDE)
 	_console_input.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	
 	_console_input.text_submitted.connect(_on_console_input_submitted)
@@ -293,12 +295,12 @@ func _check_history(index_change: int) -> void:
 
 func _scroll_output(scroll_direction: int) -> void:
 	# return if no resizing due to text
-	if _console_output.size.y == _console_output_base_height: 
+	if _console_output.size.y <= _console_output_max_height:
 		return
 	_console_output.position.y += OUTPUT_SCROLL_INCREMENT * scroll_direction
 	_console_output.position.y = clamp(
 		_console_output.position.y, 
-		(_console_output_base_height - _console_output.size.y), 
+		(_console_output_max_height - _console_output.size.y), 
 		0.0
 	) 
 
@@ -342,7 +344,7 @@ func _on_console_output_resized() -> void:
 	# simulate scroll
 	# use the signal because there is literally no other way to tell EXACTLY
 	# when a Control has resized...
-	_console_output.position.y = _console_output_base_height - _console_output.size.y
+	_console_output.position.y = _console_output_max_height - _console_output.size.y
 
 func _on_console_input_submitted(new_text: String) -> void:
 	if new_text == "": return

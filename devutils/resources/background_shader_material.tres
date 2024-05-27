@@ -1,0 +1,13 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://g6gaxy02vrdx"]
+
+[ext_resource type="Shader" path="res://devutils/resources/fog_shader.gdshader" id="1_de6ad"]
+
+[resource]
+shader = ExtResource("1_de6ad")
+shader_parameter/color = Color(0.168627, 0.168627, 0.168627, 1)
+shader_parameter/OCTAVES = 4
+shader_parameter/enable_pixelation = true
+shader_parameter/pixelation_amount = 500
+shader_parameter/fog_direction = Vector2(1, 1)
+shader_parameter/scroll_noise_tex = false
+shader_parameter/noise_scroll_direction = Vector2(1, 0)

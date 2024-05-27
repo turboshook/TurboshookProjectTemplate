@@ -1,6 +1,7 @@
 extends CanvasLayer
 
-const VERSION_TEXT: String = 					" -- DevUtils [v0.0.4] --\n "
+const VERSION_TEXT: String = 					" -- DevUtils [v0.0.5] -- "
+const BYLINE: String = 							"      by turboshook     \n "
 const COMMAND_TAG: String = 					"-> "
 const RETURN_VALUE_TAG: String = 				"<- "
 const ERROR_TAG: String = 						" x "
@@ -19,7 +20,7 @@ const ERROR_ARGUMENT_COUNT: String = 			"arg count mismatch"
 const ERROR_ARGUMENT_TYPE_MISMATCH: String = 	"arg type mismatch"
 const ERROR_BLACKLISTED_FUNCTION: String = 		"function not allowed: "
 
-const HELP_TEXT: String = 						"Hello! Use the 'commandlist' command to see all commands in the database. To learn about a specific command, type 'explain' followed by that command's name. I hope this helps you!"
+const HELP_TEXT: String = 						"\nHello! Welcome to DevUtils. \n\nTo get started, use the 'commandlist' command to see all commands in the database. To learn about a specific command, type 'explain' followed by that command's name. \n\nArbitrary GDScript can be provided using the 'exp' command. For example, 'exp 2+2' will return 4. \n\nRefer to the docs to learn how to implement your own custom commands. \n\nI hope this helps you!"
 const LOREM_IPSUM: String = 					"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla malesuada sed tortor sed sagittis. Duis mattis at magna non volutpat. Phasellus ut metus dignissim, tempus arcu at, fermentum velit. Phasellus tincidunt dapibus massa, at ultrices nunc lobortis eu. Fusce ac nisi porttitor, molestie tortor ut, posuere ligula."
 
 const SCROLL_HOLD_TIME: float = 0.25
@@ -38,8 +39,7 @@ enum LogTypes {
 	ERROR
 }
 
-@onready var _expression_base: Node = $ExpressionBase
-
+var _expression_base: Node = null
 var _metrics_container: Control = null
 var _console_container: Control = null
 var _console_output: RichTextLabel = null
@@ -69,6 +69,15 @@ var _hold_accumulator: float = 0.0
 var _scroll_direction: int = 0
 
 func _ready() -> void:
+	
+	InputMap.add_action("devutils")
+	var devutils_input: InputEventKey = InputEventKey.new()
+	devutils_input.physical_keycode = KEY_QUOTELEFT
+	InputMap.action_add_event("devutils", devutils_input)
+	
+	set_process_mode(Node.PROCESS_MODE_ALWAYS)
+	_expression_base = Node.new()
+	add_child(_expression_base)
 	
 	_base_viewport_size = get_viewport().content_scale_size
 	_debug_theme = load("res://devutils/resources/devutils_theme.tres")
@@ -151,7 +160,16 @@ func _build_console() -> void:
 	_console_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_console_container.theme = _debug_theme
 	
-	# Background
+	# Shader Background
+	var shader_background: ColorRect = ColorRect.new()
+	_console_container.add_child(shader_background)
+	shader_background.name = "ShaderBackground"
+	shader_background.set_deferred("anchors_preset", Control.PRESET_FULL_RECT)
+	shader_background.size = _base_viewport_size
+	shader_background.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	shader_background.material = load("res://devutils/resources/background_shader_material.tres")
+	
+	# Gray Background
 	var console_background: ColorRect = ColorRect.new()
 	_console_container.add_child(console_background)
 	console_background.name = "Background"
@@ -232,9 +250,10 @@ func _init_builtin_commands() -> void:
 	init_command("clearhist", _clear_history)
 	init_command("clearall", _clear_all)
 	init_command("metrics", _show_metrics)
+	init_command("dump", _dump_output)
 	init_command("newline", _log_empty_line)
 	init_command("loremipsum", _debug_lorem_ipsum)
-	init_command("forcequit", get_tree().quit)
+	init_command("quit", get_tree().quit)
 
 func init_command(command_string: String, callable: Callable, args: Array[ArgTypes] = []) -> void:
 	command_string = command_string.replace(" ", "")
@@ -429,7 +448,6 @@ func _cast_type(arg_string: String, type: ArgTypes):
 
 func _handle_expression(command_text: String) -> void:
 	_console_log(command_text, LogTypes.COMMAND)
-	#var expression_command: String = _format_string(command_text)
 	var expression_text: String = command_text.lstrip(str(EXPRESSION_EVALUATION_TAG, " "))
 	var blacklisted_function: String = _get_blacklisted_function(expression_text)
 	if blacklisted_function != "":
@@ -457,6 +475,7 @@ func _clear_output() -> void:
 	_console_output.size = _console_output.custom_minimum_size
 	_console_output.position = Vector2.ZERO
 	_console_log(VERSION_TEXT, LogTypes.INFO)
+	_console_log(BYLINE, LogTypes.INFO)
 
 func _clear_history() -> void:
 	_command_history = []
@@ -488,6 +507,16 @@ func _debug_explain(command_name: String) -> String:
 
 func _show_metrics() -> void:
 	_metrics_container.visible = !_metrics_container.visible
+
+func _dump_output() -> void:
+	var module_directory: String = get_script().resource_path.get_base_dir()
+	if not DirAccess.dir_exists_absolute(str(module_directory) + "/dump"):
+		DirAccess.make_dir_absolute(str(module_directory) + "/dump")
+	var datetime_string: String = Time.get_datetime_string_from_system().replace(":", "-")
+	var file_name: String = str(module_directory + "/dump/output_dump-" + datetime_string + ".txt")
+	var dump: FileAccess = FileAccess.open(file_name, FileAccess.WRITE)
+	dump.store_line(_console_output.get_parsed_text())
+	dump.close()
 
 func _log_empty_line() -> void:
 	_console_log(" ", LogTypes.RETURN_VALUE)

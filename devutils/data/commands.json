@@ -5,7 +5,7 @@
 	},
 	"commandlist": {
 		"base": "true",
-		"explain_text": "Lists all commands in the database."
+		"explain_text": "Returns a list of all commands in the database."
 	},
 	"explain": {
 		"base": "true", 
@@ -28,6 +28,10 @@
 		"base": "true",
 		"explain_text": "Toggles visibility of debug metrics."
 	},
+	"dump": {
+		"base": "true",
+		"explain_text": "Writes all current console output to a new text file in the dump directory."
+	},
 	"newline": {
 		"base": "true",
 		"explain_text": "Logs an empty line to the console."
@@ -36,8 +40,8 @@
 		"base": "true",
 		"explain_text": "Prints a paragraph of text."
 	},
-	"forcequit": {
+	"quit": {
 		"base": "true",
-		"explain_text": "Closes the game directly through the SceneTree."
+		"explain_text": "Closes the game directly through the SceneTree by calling get_tree().quit()."
 	}
 }

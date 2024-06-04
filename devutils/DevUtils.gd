@@ -1,5 +1,7 @@
 extends CanvasLayer
 
+const BASE_CANVAS_LAYER: int = 100
+
 const VERSION_TEXT: String = 					" -- DevUtils [v0.0.5] -- "
 const BYLINE: String = 							"      by turboshook     \n "
 const COMMAND_TAG: String = 					"-> "
@@ -75,9 +77,12 @@ func _ready() -> void:
 	devutils_input.physical_keycode = KEY_QUOTELEFT
 	InputMap.action_add_event("devutils", devutils_input)
 	
+	layer = BASE_CANVAS_LAYER
+	
 	set_process_mode(Node.PROCESS_MODE_ALWAYS)
 	_expression_base = Node.new()
 	add_child(_expression_base)
+	_expression_base.name = "ExpressionBase"
 	
 	_base_viewport_size = get_viewport().content_scale_size
 	_debug_theme = load("res://devutils/resources/devutils_theme.tres")

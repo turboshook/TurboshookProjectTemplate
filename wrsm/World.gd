@@ -176,19 +176,3 @@ func delete_persistent_scene(region_cell: RegionCell, scene: Node2D) -> void:
 
 func get_persistent_scenes(region_cell: RegionCell) -> Array:
 	return world_data[region_cell.get_region_key()]["region_cells"][region_cell.name]["persistent_scenes"]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

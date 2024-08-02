@@ -68,6 +68,9 @@ var _use_shader_background: bool = false
 
 func _ready() -> void:
 	
+	_enabled = OS.is_debug_build()
+	_use_shader_background = (ProjectSettings.get_setting("rendering/renderer/rendering_method") == "forward_plus")
+	
 	# Create required input actions
 	InputMap.add_action("devutils")
 	var devutils_input: InputEventKey = InputEventKey.new()

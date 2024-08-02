@@ -5,10 +5,13 @@ const BYLINE: String = 							"      by turboshook     \n "
 const COMMAND_TAG: String = 					"-> "
 const RETURN_VALUE_TAG: String = 				"<- "
 const ERROR_TAG: String = 						" x "
-const INFO_COLOR: Color = 						Color.YELLOW
-const COMMAND_COLOR: Color = 					Color.GRAY
-const RETURN_VALUE_COLOR: Color = 				Color.WHITE
-const ERROR_COLOR: Color = 						Color.RED
+const CONSOLE_OUTPUT_BACKGROUND_COLOR: Color =	Color("323353")
+const CONSOLE_OUTPUT_BACKGROUND_ALPHA: float = 	0.25
+const CONSOLE_INPUT_COLOR: Color = 				Color("323353")
+const INFO_COLOR: Color = 						Color("cddf6c")
+const COMMAND_COLOR: Color = 					Color("c7dcd0")
+const RETURN_VALUE_COLOR: Color = 				Color("ffffff")
+const ERROR_COLOR: Color = 						Color("e83b3b")
 const EXPRESSION_EVALUATION_TAG: String = 		"exp"
 const DEBUG_METRIC_LABEL_PATH: String = 		"res://devutils/utils/DebugMetricLabel.tscn"
 const OUTPUT_SCROLL_INCREMENT: float = 			8.0
@@ -20,8 +23,7 @@ const ERROR_BLACKLISTED_FUNCTION: String = 		"function not allowed: "
 const HELP_TEXT: String = 						"\nHello! Welcome to DevUtils. \n\nTo get started, use the 'commandlist' command to see all commands in the database. To learn about a specific command, type 'explain' followed by that command's name. \n\nArbitrary GDScript can be provided using the 'exp' command. For example, 'exp 2+2' will return 4. \n\nRefer to the docs to learn how to implement your own custom commands. \n\nI hope this helps you!"
 const LOREM_IPSUM: String = 					"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla malesuada sed tortor sed sagittis. Duis mattis at magna non volutpat. Phasellus ut metus dignissim, tempus arcu at, fermentum velit. Phasellus tincidunt dapibus massa, at ultrices nunc lobortis eu. Fusce ac nisi porttitor, molestie tortor ut, posuere ligula."
 const SCROLL_HOLD_TIME: float = 				0.25
-const MAX_SCROLL_HEIGHT: float = 				-4.0
-const BASE_CANVAS_LAYER: int = 101
+const BASE_CANVAS_LAYER: int =					101
 
 enum ArgTypes {
 	INT,
@@ -38,6 +40,7 @@ enum LogTypes {
 }
 
 var _expression_base: Node = null
+var _max_scroll_height: float = 0.0
 var _metrics_container: Control = null
 var _console_container: Control = null
 var _console_output: RichTextLabel = null
@@ -47,7 +50,7 @@ var _metrics_labels: Dictionary = {}
 var _command_history: Array[String] = []
 var _command_history_index: int = 0
 var _base_viewport_size: Vector2 = Vector2.ZERO
-var _debug_theme: Theme = null
+var _devutils_theme: Theme = null
 var _command_dictionary: Dictionary = {}
 var _function_blacklist: Array = []
 var _hold_accumulator: float = 0.0
@@ -105,7 +108,13 @@ func _ready() -> void:
 	_expression_base.name = "ExpressionBase"
 	
 	_base_viewport_size = get_viewport().content_scale_size
-	_debug_theme = load("res://devutils/resources/devutils_theme.tres")
+	
+	# ensure nice-looking output scrolling 
+	var viewport_y_mod_line_height: float = fmod(_base_viewport_size.y, 8.0)
+	if viewport_y_mod_line_height != 0: # I am so smart :)
+		_max_scroll_height = viewport_y_mod_line_height - OUTPUT_SCROLL_INCREMENT
+	
+	_devutils_theme = load("res://devutils/resources/devutils_theme.tres")
 	
 	# Metrics
 	_build_metric_layer()
@@ -125,7 +134,7 @@ func _build_metric_layer() -> void:
 	add_child(_metrics_container)
 	_metrics_container.name = "MetricsContainer"
 	_metrics_container.set_anchors_preset(Control.PRESET_FULL_RECT)
-	_metrics_container.theme = _debug_theme
+	_metrics_container.theme = _devutils_theme
 	
 	# LeftPanel
 	var left_metrics_panel: VBoxContainer = VBoxContainer.new()
@@ -183,7 +192,7 @@ func _build_console() -> void:
 	_console_container.size = _base_viewport_size
 	_console_container.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_console_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_console_container.theme = _debug_theme
+	_console_container.theme = _devutils_theme
 	
 	# Shader Background
 	if _use_shader_background:
@@ -201,7 +210,8 @@ func _build_console() -> void:
 	console_background.name = "Background"
 	console_background.set_deferred("anchors_preset", Control.PRESET_FULL_RECT)
 	console_background.size = _base_viewport_size
-	console_background.color = Color("55555555")
+	console_background.color = CONSOLE_OUTPUT_BACKGROUND_COLOR
+	console_background.color.a = CONSOLE_OUTPUT_BACKGROUND_ALPHA
 	console_background.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	
 	# ConsoleOutput
@@ -231,6 +241,10 @@ func _build_console() -> void:
 	_console_input.size = Vector2(_base_viewport_size.x, 16.0)
 	_console_input.position = Vector2(0.0, _base_viewport_size.y - 16.0)
 	_console_input.set_deferred("anchors_preset", Control.PRESET_BOTTOM_WIDE)
+	var _input_focus_stylebox: StyleBoxFlat = _devutils_theme.get_stylebox("focus", "LineEdit")
+	_input_focus_stylebox.bg_color = CONSOLE_INPUT_COLOR
+	var _input_normal_stylebox: StyleBoxFlat = _devutils_theme.get_stylebox("normal", "LineEdit")
+	_input_normal_stylebox.bg_color = CONSOLE_INPUT_COLOR
 	_console_input.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	
 	_console_input.text_submitted.connect(_on_console_input_submitted)
@@ -420,7 +434,7 @@ func _scroll_output(scroll_direction: int) -> void:
 	_console_output.position.y = clamp(
 		_console_output.position.y, 
 		(_console_output_max_height - _console_output.size.y), 
-		MAX_SCROLL_HEIGHT
+		_max_scroll_height
 	) 
 
 func is_open() -> bool:

@@ -1,47 +1,38 @@
 {
-	"help": {
-		"base": "true", 
-		"explain_text": "Writes some useful tips on getting started to the console output."
-	},
-	"commandlist": {
-		"base": "true",
-		"explain_text": "Returns a list of all commands in the database."
-	},
-	"explain": {
-		"base": "true", 
-		"arg_count": 1,
-		"explain_text": "Takes one command as an argument and returns the explain text for that command."
-	},
-	"clearout": {
-		"base": "true",
-		"explain_text": "Erases all console output."
-	},
-	"clearhist": {
-		"base": "true",
-		"explain_text": "Erases the command history."
-	},
-	"clearall": {
-		"base": "true",
-		"explain_text": "Erases both command history and console output."
-	},
-	"metrics": {
-		"base": "true",
-		"explain_text": "Toggles visibility of debug metrics."
-	},
-	"dump": {
-		"base": "true",
-		"explain_text": "Writes all current console output to a new text file in the dump directory."
-	},
-	"newline": {
-		"base": "true",
-		"explain_text": "Logs an empty line to the console."
-	},
-	"loremipsum": {
-		"base": "true",
-		"explain_text": "Prints a paragraph of text."
-	},
-	"quit": {
-		"base": "true",
-		"explain_text": "Closes the game directly through the SceneTree by calling get_tree().quit()."
+	"base": {
+		"help": {
+			"explain_text": "Writes some useful tips on getting started to the console output."
+		},
+		"commandlist": {
+			"explain_text": "Returns a list of all commands in the database."
+		},
+		"explain": {
+			"arg_count": 1,
+			"explain_text": "Takes one command as an argument and returns the explain text for that command."
+		},
+		"clearout": {
+			"explain_text": "Erases all console output."
+		},
+		"clearhist": {
+			"explain_text": "Erases the command history."
+		},
+		"clearall": {
+			"explain_text": "Erases both command history and console output."
+		},
+		"metrics": {
+			"explain_text": "Toggles visibility of debug metrics."
+		},
+		"dump": {
+			"explain_text": "Writes all current console output to a new text file in the dump directory."
+		},
+		"newline": {
+			"explain_text": "Logs an empty line to the console."
+		},
+		"loremipsum": {
+			"explain_text": "Prints a paragraph of text."
+		},
+		"quit": {
+			"explain_text": "Closes the game directly through the SceneTree by calling get_tree().quit()."
+		}
 	}
 }

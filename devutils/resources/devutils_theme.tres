@@ -1,10 +1,14 @@
-[gd_resource type="Theme" load_steps=3 format=3 uid="uid://bf6dlyqc2txvw"]
+[gd_resource type="Theme" load_steps=4 format=3 uid="uid://bf6dlyqc2txvw"]
 
 [ext_resource type="StyleBox" uid="uid://bjsyjqge4pbu6" path="res://devutils/resources/line_edit_stylebox.tres" id="1_kdlh0"]
 [ext_resource type="FontFile" uid="uid://bvrigdpskny64" path="res://devutils/import/PixelOperatorMono8.ttf" id="2_oynns"]
 
+[sub_resource type="FontVariation" id="FontVariation_q5b8i"]
+base_font = ExtResource("2_oynns")
+spacing_glyph = -1
+
 [resource]
-default_font = ExtResource("2_oynns")
+default_font = SubResource("FontVariation_q5b8i")
 default_font_size = 8
 Label/constants/line_spacing = 2
 LineEdit/styles/focus = ExtResource("1_kdlh0")

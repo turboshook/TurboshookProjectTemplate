@@ -1,8 +1,6 @@
 extends CanvasLayer
 
-const BASE_CANVAS_LAYER: int = 100
-
-const VERSION_TEXT: String = 					" -- DevUtils [v0.0.5] -- "
+const VERSION_TEXT: String = 					" -- DevUtils [v0.0.6] -- "
 const BYLINE: String = 							"      by turboshook     \n "
 const COMMAND_TAG: String = 					"-> "
 const RETURN_VALUE_TAG: String = 				"<- "
@@ -12,20 +10,18 @@ const COMMAND_COLOR: Color = 					Color.GRAY
 const RETURN_VALUE_COLOR: Color = 				Color.WHITE
 const ERROR_COLOR: Color = 						Color.RED
 const EXPRESSION_EVALUATION_TAG: String = 		"exp"
-
 const DEBUG_METRIC_LABEL_PATH: String = 		"res://devutils/utils/DebugMetricLabel.tscn"
-const OUTPUT_SCROLL_INCREMENT: float = 8.0
-
+const OUTPUT_SCROLL_INCREMENT: float = 			8.0
 const ERROR_MISSING_BASE: String = 				"missing base for [command]"
 const ERROR_UNKNOWN_COMMAND: String = 			"unknown command"
 const ERROR_ARGUMENT_COUNT: String = 			"arg count mismatch"
 const ERROR_ARGUMENT_TYPE_MISMATCH: String = 	"arg type mismatch"
 const ERROR_BLACKLISTED_FUNCTION: String = 		"function not allowed: "
-
 const HELP_TEXT: String = 						"\nHello! Welcome to DevUtils. \n\nTo get started, use the 'commandlist' command to see all commands in the database. To learn about a specific command, type 'explain' followed by that command's name. \n\nArbitrary GDScript can be provided using the 'exp' command. For example, 'exp 2+2' will return 4. \n\nRefer to the docs to learn how to implement your own custom commands. \n\nI hope this helps you!"
 const LOREM_IPSUM: String = 					"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla malesuada sed tortor sed sagittis. Duis mattis at magna non volutpat. Phasellus ut metus dignissim, tempus arcu at, fermentum velit. Phasellus tincidunt dapibus massa, at ultrices nunc lobortis eu. Fusce ac nisi porttitor, molestie tortor ut, posuere ligula."
-
-const SCROLL_HOLD_TIME: float = 0.25
+const SCROLL_HOLD_TIME: float = 				0.25
+const MAX_SCROLL_HEIGHT: float = 				-4.0
+const BASE_CANVAS_LAYER: int = 101
 
 enum ArgTypes {
 	INT,
@@ -52,6 +48,12 @@ var _command_history: Array[String] = []
 var _command_history_index: int = 0
 var _base_viewport_size: Vector2 = Vector2.ZERO
 var _debug_theme: Theme = null
+var _command_dictionary: Dictionary = {}
+var _function_blacklist: Array = []
+var _hold_accumulator: float = 0.0
+var _scroll_direction: int = 0
+var _enabled: bool = true
+var _use_shader_background: bool = false
 
 # Example of a command in commands.json:
 # 
@@ -64,18 +66,33 @@ var _debug_theme: Theme = null
 # }
 # The "arg_types" and "callable" keys are added on initialization
 
-var _command_dictionary: Dictionary = {}
-var _function_blacklist: Array = []
-
-var _hold_accumulator: float = 0.0
-var _scroll_direction: int = 0
-
 func _ready() -> void:
 	
+	# Create required input actions
 	InputMap.add_action("devutils")
 	var devutils_input: InputEventKey = InputEventKey.new()
 	devutils_input.physical_keycode = KEY_QUOTELEFT
 	InputMap.action_add_event("devutils", devutils_input)
+	
+	InputMap.add_action("history_up")
+	var history_up_input: InputEventKey = InputEventKey.new()
+	history_up_input.physical_keycode = KEY_UP
+	InputMap.action_add_event("history_up", history_up_input)
+	
+	InputMap.add_action("history_down")
+	var history_down_input: InputEventKey = InputEventKey.new()
+	history_down_input.physical_keycode = KEY_DOWN
+	InputMap.action_add_event("history_down", history_down_input)
+	
+	InputMap.add_action("output_scroll_up")
+	var output_scroll_up_input: InputEventKey = InputEventKey.new()
+	output_scroll_up_input.physical_keycode = KEY_PAGEUP
+	InputMap.action_add_event("output_scroll_up", output_scroll_up_input)
+	
+	InputMap.add_action("output_scroll_down")
+	var output_scroll_down_input: InputEventKey = InputEventKey.new()
+	output_scroll_down_input.physical_keycode = KEY_PAGEDOWN
+	InputMap.action_add_event("output_scroll_down", output_scroll_down_input)
 	
 	layer = BASE_CANVAS_LAYER
 	
@@ -166,13 +183,14 @@ func _build_console() -> void:
 	_console_container.theme = _debug_theme
 	
 	# Shader Background
-	var shader_background: ColorRect = ColorRect.new()
-	_console_container.add_child(shader_background)
-	shader_background.name = "ShaderBackground"
-	shader_background.set_deferred("anchors_preset", Control.PRESET_FULL_RECT)
-	shader_background.size = _base_viewport_size
-	shader_background.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	shader_background.material = load("res://devutils/resources/background_shader_material.tres")
+	if _use_shader_background:
+		var shader_background: ColorRect = ColorRect.new()
+		_console_container.add_child(shader_background)
+		shader_background.name = "ShaderBackground"
+		shader_background.set_deferred("anchors_preset", Control.PRESET_FULL_RECT)
+		shader_background.size = _base_viewport_size
+		shader_background.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		shader_background.material = load("res://devutils/resources/background_shader_material.tres")
 	
 	# Gray Background
 	var console_background: ColorRect = ColorRect.new()
@@ -194,7 +212,6 @@ func _build_console() -> void:
 	_console_output.size = Vector2(_base_viewport_size.x, 0.0)
 	_console_output.custom_minimum_size = Vector2(
 		_base_viewport_size.x,
-		#_base_viewport_size.y - 16.0
 		0.0
 	)
 	_console_output.set_deferred("anchors_preset", Control.PRESET_BOTTOM_WIDE)
@@ -227,13 +244,14 @@ func _import_command_dictionary() -> void:
 	if _command_dictionary == null:
 		printerr("DevUtils @ _import_command_dictionary(): commands.json failed to parse, make sure it is formatted correctly!")
 		return
-	for command_string in _command_dictionary.keys():
-		if !_command_dictionary[command_string].has("arg_count"):
-			_command_dictionary[command_string]["arg_count"] = 0
-		if !_command_dictionary[command_string].has("missing_base_error"):
-			_command_dictionary[command_string]["missing_base_error"] = ERROR_MISSING_BASE
-		_command_dictionary[command_string]["arg_types"] = []
-		_command_dictionary[command_string]["callable"] = null
+	for category in _command_dictionary.keys():
+		for command in _command_dictionary[category].keys():
+			if !_command_dictionary[category][command].has("arg_count"):
+				_command_dictionary[category][command]["arg_count"] = 0
+			if !_command_dictionary[category][command].has("missing_base_error"):
+				_command_dictionary[category][command]["missing_base_error"] = ERROR_MISSING_BASE
+			_command_dictionary[category][command]["arg_types"] = []
+			_command_dictionary[category][command]["callable"] = null
 
 func _import_function_blacklist() -> void:
 	if !FileAccess.file_exists("res://devutils/data/function_blacklist.json"):
@@ -248,36 +266,111 @@ func _import_function_blacklist() -> void:
 		return
 
 func _init_builtin_commands() -> void:
-	init_command("help", _debug_help)
-	init_command("commandlist", _debug_commandlist)
-	init_command("explain", _debug_explain, [ArgTypes.STRING])
+	init_command("commandlist", _commandlist)
+	init_command("explain", _explain, [ArgTypes.STRING])
+	init_command("help", _help)
 	init_command("clearout", _clear_output)
 	init_command("clearhist", _clear_history)
 	init_command("clearall", _clear_all)
 	init_command("metrics", _show_metrics)
 	init_command("dump", _dump_output)
 	init_command("newline", _log_empty_line)
-	init_command("loremipsum", _debug_lorem_ipsum)
+	init_command("loremipsum", _lorem_ipsum)
 	init_command("quit", get_tree().quit)
+
+func _commandlist() -> String:
+	var categories: Array = _command_dictionary.keys()
+	var return_string: String = "\n"
+	for category in categories:
+		return_string += str("\n" + category.to_upper())
+		var commands: Array = _command_dictionary[category].keys()
+		commands.sort()
+		for command in commands:
+			return_string += str("\n" + " - " + command)
+		return_string += "\n"
+	return return_string
+
+func _explain(command_name: String) -> String:
+	var valid_commands: Array = _command_dictionary.keys()
+	if command_name not in valid_commands:
+		return str("'", command_name, "' is not a recognized command.")
+	var command: Dictionary = _command_dictionary[command_name]
+	if not command.has("explain_text"):
+		return "no explain text provided :("
+	return command["explain_text"]
+
+func _help() -> String:
+	return HELP_TEXT
+
+func _clear_output() -> void:
+	_console_output.clear()
+	_console_output.size = _console_output.custom_minimum_size
+	_console_output.position = Vector2.ZERO
+	_console_log(VERSION_TEXT, LogTypes.INFO)
+	_console_log(BYLINE, LogTypes.INFO)
+
+func _clear_history() -> void:
+	_command_history = []
+	_command_history_index = 0
+
+func _clear_all() -> void:
+	_clear_output()
+	_clear_history()
+
+func _show_metrics() -> void:
+	_metrics_container.visible = !_metrics_container.visible
+
+func _dump_output() -> void:
+	var module_directory: String = get_script().resource_path.get_base_dir()
+	if not DirAccess.dir_exists_absolute(str(module_directory) + "/dump"):
+		DirAccess.make_dir_absolute(str(module_directory) + "/dump")
+	var datetime_string: String = Time.get_datetime_string_from_system().replace(":", "-")
+	var file_name: String = str(module_directory + "/dump/output_dump-" + datetime_string + ".txt")
+	var dump: FileAccess = FileAccess.open(file_name, FileAccess.WRITE)
+	dump.store_line(_console_output.get_parsed_text())
+	dump.close()
+
+func _log_empty_line() -> void:
+	_console_log(" ", LogTypes.RETURN_VALUE)
+
+func _lorem_ipsum() -> void:
+	_console_log(LOREM_IPSUM, LogTypes.RETURN_VALUE)
+
+func _debug_get_static_memory_usage() -> String:
+	return String.humanize_size(OS.get_static_memory_usage())
 
 func init_command(command_string: String, callable: Callable, args: Array[ArgTypes] = []) -> void:
 	command_string = command_string.replace(" ", "")
-	if !_command_dictionary.has(command_string):
+	var command_found: bool = false
+	var command_category: String = ""
+	for category in _command_dictionary.keys():
+		command_category = category
+		for command in _command_dictionary[category].keys():
+			if command_string == command:
+				command_found = true
+				break
+		if command_found:
+			break
+	if !command_found:
 		printerr("DevUtils @ init_command(): Failed to init command ", command_string, " as it does not exist in commands.json.")
 		return
-	if args.size() != _command_dictionary[command_string]["arg_count"]:
+	if args.size() != _command_dictionary[command_category][command_string]["arg_count"]:
 		printerr("DevUtils @ init_command(): Failed to init command ", command_string, ". Expected ", _command_dictionary[command_string]["arg_count"], " arguments, but was provided ", args.size(), ".")
 		return
 	for arg_type in args:
-		_command_dictionary[command_string]["arg_types"].append(arg_type)
-	_command_dictionary[command_string]["callable"] = callable
+		_command_dictionary[command_category][command_string]["arg_types"].append(arg_type)
+	_command_dictionary[command_category][command_string]["callable"] = callable
 
 func _input(event: InputEvent) -> void:
+	
+	if !_enabled:
+		return
+	
 	if is_open():
 		
-		if event.is_action_pressed("ui_up"):
+		if event.is_action_pressed("history_up"):
 			_check_history(-1)
-		elif event.is_action_pressed("ui_down"):
+		elif event.is_action_pressed("history_down"):
 			_check_history(1)
 		
 		if event.is_action_pressed("devutils"): 
@@ -294,10 +387,10 @@ func _physics_process(delta: float) -> void:
 		_hold_accumulator = 0.0
 		return
 	
-	if Input.is_action_just_pressed("ui_page_up"):
+	if Input.is_action_just_pressed("output_scroll_up"):
 		_scroll_direction = 1
 		_scroll_output(_scroll_direction)
-	elif Input.is_action_just_pressed("ui_page_down"):
+	elif Input.is_action_just_pressed("output_scroll_down"):
 		_scroll_direction = -1
 		_scroll_output(_scroll_direction)
 	
@@ -319,13 +412,12 @@ func _check_history(index_change: int) -> void:
 
 func _scroll_output(scroll_direction: int) -> void:
 	# return if no resizing due to text
-	if _console_output.size.y <= _console_output_max_height:
-		return
+	if _console_output.size.y <= _console_output_max_height: return
 	_console_output.position.y += OUTPUT_SCROLL_INCREMENT * scroll_direction
 	_console_output.position.y = clamp(
 		_console_output.position.y, 
 		(_console_output_max_height - _console_output.size.y), 
-		0.0
+		MAX_SCROLL_HEIGHT
 	) 
 
 func is_open() -> bool:
@@ -390,11 +482,21 @@ func _handle_command(command_text: String) -> void:
 	if command_text != "newline":
 		_console_log(command_text, LogTypes.COMMAND)
 	
-	if !_command_dictionary.has(words[0]):
+	var command_found: bool = false
+	var command_category: String = ""
+	for category in _command_dictionary.keys():
+		command_category = category
+		for command in _command_dictionary[category].keys():
+			if words[0] == command:
+				command_found = true
+				break
+		if command_found:
+			break
+	if !command_found:
 		_console_log(str(ERROR_UNKNOWN_COMMAND, " '", words[0], "'"), LogTypes.ERROR)
 		return
 	
-	var command: Dictionary = _command_dictionary[words[0]]
+	var command: Dictionary = _command_dictionary[command_category][words[0]]
 	if command["callable"] == null or !command["callable"].is_valid():
 		var missing_base_error: String = command["missing_base_error"]
 		if missing_base_error.contains("[command]"):
@@ -447,8 +549,8 @@ func _get_type_string(arg_type: ArgTypes) -> String:
 func _cast_type(arg_string: String, type: ArgTypes):
 	if type == ArgTypes.INT: return arg_string as int
 	if type == ArgTypes.FLOAT: return arg_string as float
-	if type == ArgTypes.STRING: return arg_string as String
-	if type == ArgTypes.BOOL: return arg_string as bool
+	if type == ArgTypes.STRING: return arg_string
+	if type == ArgTypes.BOOL: return str_to_var(arg_string)
 	return "BAD CAST"
 
 func _handle_expression(command_text: String) -> void:
@@ -474,69 +576,3 @@ func _get_blacklisted_function(expression_text: String) -> String:
 		if function in expression_text:
 			return function
 	return ""
-
-func _clear_output() -> void:
-	_console_output.clear()
-	_console_output.size = _console_output.custom_minimum_size
-	_console_output.position = Vector2.ZERO
-	_console_log(VERSION_TEXT, LogTypes.INFO)
-	_console_log(BYLINE, LogTypes.INFO)
-
-func _clear_history() -> void:
-	_command_history = []
-	_command_history_index = 0
-
-func _clear_all() -> void:
-	_clear_output()
-	_clear_history()
-
-func _debug_commandlist() -> String:
-	var commands: Array = _command_dictionary.keys()
-	commands.sort()
-	var return_string: String = ""
-	for command in commands:
-		return_string += str("\n", command)
-	return return_string
-
-func _debug_help() -> String:
-	return HELP_TEXT
-
-func _debug_explain(command_name: String) -> String:
-	var valid_commands: Array = _command_dictionary.keys()
-	if command_name not in valid_commands:
-		return str("'", command_name, "' is not a recognized command.")
-	var command: Dictionary = _command_dictionary[command_name]
-	if not command.has("explain_text"):
-		return "no explain text provided :("
-	return command["explain_text"]
-
-func _show_metrics() -> void:
-	_metrics_container.visible = !_metrics_container.visible
-
-func _dump_output() -> void:
-	var module_directory: String = get_script().resource_path.get_base_dir()
-	if not DirAccess.dir_exists_absolute(str(module_directory) + "/dump"):
-		DirAccess.make_dir_absolute(str(module_directory) + "/dump")
-	var datetime_string: String = Time.get_datetime_string_from_system().replace(":", "-")
-	var file_name: String = str(module_directory + "/dump/output_dump-" + datetime_string + ".txt")
-	var dump: FileAccess = FileAccess.open(file_name, FileAccess.WRITE)
-	dump.store_line(_console_output.get_parsed_text())
-	dump.close()
-
-func _log_empty_line() -> void:
-	_console_log(" ", LogTypes.RETURN_VALUE)
-
-func _debug_lorem_ipsum() -> void:
-	_console_log(LOREM_IPSUM, LogTypes.RETURN_VALUE)
-
-func _debug_get_static_memory_usage() -> String:
-	return String.humanize_size(OS.get_static_memory_usage())
-
-
-
-
-
-
-
-
-

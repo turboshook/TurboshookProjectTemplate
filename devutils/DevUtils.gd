@@ -308,13 +308,16 @@ func _commandlist() -> String:
 	return return_string
 
 func _explain(command_name: String) -> String:
-	var valid_commands: Array = _command_dictionary.keys()
-	if command_name not in valid_commands:
-		return str("'", command_name, "' is not a recognized command.")
-	var command: Dictionary = _command_dictionary[command_name]
-	if not command.has("explain_text"):
-		return "no explain text provided :("
-	return command["explain_text"]
+	var return_text: String = str("'", command_name, "' is not a recognized command.")
+	var categories: Array = _command_dictionary.keys()
+	for category in categories:
+		if not _command_dictionary[category].has(command_name): 
+			continue
+		var command: Dictionary = _command_dictionary[category][command_name]
+		if not command.has("explain_text"):
+			return_text = "no explain text provided for command"
+		return_text = command["explain_text"]
+	return return_text
 
 func _help() -> String:
 	return HELP_TEXT

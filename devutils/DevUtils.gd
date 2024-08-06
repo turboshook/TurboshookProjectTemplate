@@ -1,7 +1,7 @@
 extends CanvasLayer
 
 const VERSION_TEXT: String = 					" -- DevUtils [v0.0.6] -- "
-const BYLINE: String = 							"      by turboshook     \n "
+const BYLINE: String = 							"      by turboshook     \n"
 const COMMAND_TAG: String = 					"-> "
 const RETURN_VALUE_TAG: String = 				"<- "
 const ERROR_TAG: String = 						" x "
@@ -23,7 +23,7 @@ const ERROR_BLACKLISTED_FUNCTION: String = 		"function not allowed: "
 const HELP_TEXT: String = 						"\nHello! Welcome to DevUtils. \n\nTo get started, use the 'commandlist' command to see all commands in the database. To learn about a specific command, type 'explain' followed by that command's name. \n\nArbitrary GDScript can be provided using the 'exp' command. For example, 'exp 2+2' will return 4. \n\nRefer to the docs to learn how to implement your own custom commands. \n\nI hope this helps you!"
 const LOREM_IPSUM: String = 					"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla malesuada sed tortor sed sagittis. Duis mattis at magna non volutpat. Phasellus ut metus dignissim, tempus arcu at, fermentum velit. Phasellus tincidunt dapibus massa, at ultrices nunc lobortis eu. Fusce ac nisi porttitor, molestie tortor ut, posuere ligula."
 const SCROLL_HOLD_TIME: float = 				0.25
-const BASE_CANVAS_LAYER: int =					101
+const BASE_CANVAS_LAYER: int =					100
 
 enum ArgTypes {
 	INT,
@@ -72,6 +72,9 @@ var _use_shader_background: bool = false
 func _ready() -> void:
 	
 	_enabled = OS.is_debug_build()
+	if !_enabled:
+		return
+	
 	_use_shader_background = (ProjectSettings.get_setting("rendering/renderer/rendering_method") == "forward_plus")
 	
 	# Create required input actions
@@ -204,7 +207,7 @@ func _build_console() -> void:
 		shader_background.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		shader_background.material = load("res://devutils/resources/background_shader_material.tres")
 	
-	# Gray Background
+	# Console Background Rect
 	var console_background: ColorRect = ColorRect.new()
 	_console_container.add_child(console_background)
 	console_background.name = "Background"
@@ -214,7 +217,7 @@ func _build_console() -> void:
 	console_background.color.a = CONSOLE_OUTPUT_BACKGROUND_ALPHA
 	console_background.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	
-	# ConsoleOutput
+	# Console Output
 	_console_output = RichTextLabel.new()
 	_console_container.add_child(_console_output)
 	_console_output.name = "ConsoleOutput"
@@ -360,6 +363,10 @@ func _debug_get_static_memory_usage() -> String:
 	return String.humanize_size(OS.get_static_memory_usage())
 
 func init_command(command_string: String, callable: Callable, args: Array[ArgTypes] = []) -> void:
+	
+	if !_enabled:
+		return
+	
 	command_string = command_string.replace(" ", "")
 	var command_found: bool = false
 	var command_category: String = ""
@@ -387,18 +394,20 @@ func _input(event: InputEvent) -> void:
 		return
 	
 	if is_open():
-		
 		if event.is_action_pressed("history_up"):
 			_check_history(-1)
 		elif event.is_action_pressed("history_down"):
 			_check_history(1)
-		
 		if event.is_action_pressed("devutils"): 
 			_close_console()
 	elif event.is_action_pressed("devutils"):
 		_open_console()
 
 func _physics_process(delta: float) -> void:
+	
+	if !_enabled:
+		return
+	
 	var scroll_released: bool = (Input.is_action_just_released("ui_page_up") or Input.is_action_just_released("ui_page_down"))
 	var both_held: bool = (Input.is_action_pressed("ui_page_up") and Input.is_action_pressed("ui_page_down"))
 	
@@ -488,8 +497,6 @@ func _on_console_input_submitted(new_text: String) -> void:
 	_command_history.append(new_text)
 	_command_history_index = _command_history.size()
 	_handle_command(new_text)
-	#if result != "":
-		#_console_log(result, LogTypes.RETURN_VALUE)
 
 func _handle_command(command_text: String) -> void:
 	var words: PackedStringArray = command_text.split(" ", false)

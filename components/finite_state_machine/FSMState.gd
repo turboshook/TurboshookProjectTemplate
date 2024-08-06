@@ -11,8 +11,8 @@ class_name FSMState
 ## and methods of the scene being controlled by this state.
 var state_parent: Node
 
-## Used to communicate up to the controlling [FiniteStateMachine] that a state
-## change has been requested outside of one of the loop functions.
+## Used to communicate up to the parent [FiniteStateMachine] that a state
+## change has been requested using [method FSMState.request_state_change]
 signal state_change_requested(state_path: String)
 
 ## Called once when transitioning to this state. Use this for state initialization.
@@ -58,6 +58,6 @@ func exit() -> void:
 
 ## Used to request an immediate state change from anywhere in the current script.
 ## This is intended to simplify situations where state changes should happen in
-## response to signals that this [FSMState] handles.
+## response to signals handled by this [FSMState].
 func request_state_change(state_path: String) -> void:
 	state_change_requested.emit(state_path)

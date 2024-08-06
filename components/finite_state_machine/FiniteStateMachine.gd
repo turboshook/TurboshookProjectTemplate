@@ -3,10 +3,10 @@ class_name FiniteStateMachine
 
 ## My implementation of a finite state machine.
 ##
-## [FiniteStateMachine] allows for specialized control of scenes by allowing complex 
+## [FiniteStateMachine] facilitates specialized control of scenes by allowing complex 
 ## logic to be split among an arbitrary number of states. It allows some [Node]-derived 
-## scene, cached internally as [param state_parent], to "pass down" calls from some 
-## of its built-in functions to instances of [FSMState]. 
+## scene to pass its member variables and functions to instances of [FSMState], where  
+## the work is done.
 ## [br][br]
 ##
 ## [b]To get started[/b], create an instance of [FiniteStateMachine] as a child of 
@@ -142,16 +142,3 @@ func _change_state(new_state: FSMState) -> void:
 
 func _on_state_change_requested(state_name: String) -> void:
 	_handle_returned_path(state_name)
-
-
-
-
-
-
-
-
-
-
-
-
-

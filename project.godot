@@ -11,8 +11,13 @@ config_version=5
 [application]
 
 config/name="MyProjectTemplate"
+run/main_scene="res://game_files/root_scene/Game.tscn"
 config/features=PackedStringArray("4.3")
 config/icon="res://icon.svg"
+
+[autoload]
+
+DevUtils="*res://devutils/DevUtils.gd"
 
 [layer_names]
 

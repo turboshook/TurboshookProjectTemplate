@@ -1,6 +1,10 @@
 extends Sprite2D
 class_name MySprite2D
 
+## @deprecated
+## As of Godot 4.3, the pixel snapping functionality available in the project settings
+## appears to work as expected.
+##
 ## Indicates the behavior of this node with regard to pixel snapping.
 enum PixelSnapMode {
 	## No attempt at pixel snapping is made, consistent with default [Sprite2D] behavior.
@@ -21,7 +25,7 @@ enum PixelSnapMode {
 }
 
 ## Desired pixel snap behavior of this node.
-@export var pixel_snap_mode: PixelSnapMode = PixelSnapMode.PARENT
+@export var pixel_snap_mode: PixelSnapMode = PixelSnapMode.NONE
 
 var _parent_node: Node = null
 
@@ -36,6 +40,12 @@ var _original_offset: Vector2
 var _shake_amount: float = 1.0
 var _shake_time: float = 0.0
 var _total_shake_time: float = 0.0
+
+## Emitted when sprite flicker time has elapsed.
+signal sprite_flicker_complete
+
+## Emitted when sprite shake time has elapsed.
+signal sprite_shake_complete
 
 func _ready() -> void:
 	_original_offset = offset
@@ -77,6 +87,7 @@ func stop_sprite_flicker() -> void:
 	_flicker_interval = 0.0
 	_total_flicker_time = 0.0
 	_current_flicker_interval = 0.0
+	sprite_flicker_complete.emit()
 
 func _handle_sprite_flicker(delta: float) -> void:
 	_total_flicker_time += delta
@@ -100,6 +111,7 @@ func stop_sprite_shake() -> void:
 		offset = Vector2.ZERO
 	else:
 		offset = _original_offset
+	sprite_shake_complete.emit()
 
 func _handle_sprite_shake(delta: float) -> void:
 	_total_shake_time += delta
@@ -125,10 +137,21 @@ func flash(ramp_down_time: float = 0.1) -> void:
 		ramp_down_time
 	).from(3.0)
 
-func stretch() -> void:
-	pass # TODO
-
-
-
-
-
+func stretch(stretch_scale: Vector2, stretch_time: float = 0.25, hold_time: float = .1) -> void:
+	var stretch_tween: Tween = create_tween()
+	stretch_tween.tween_property(
+		self,
+		"scale",
+		stretch_scale,
+		stretch_time
+	).set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_OUT)
+	await stretch_tween.finished
+	await get_tree().create_timer(hold_time).timeout
+	stretch_tween = create_tween()
+	stretch_tween.tween_property(
+		self,
+		"scale",
+		Vector2(1.0, 1.0),
+		stretch_time
+	).set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_OUT)
+	await stretch_tween.finished

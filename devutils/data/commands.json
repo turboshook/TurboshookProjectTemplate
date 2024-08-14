@@ -20,19 +20,19 @@
 			"explain_text": "Erases both command history and console output."
 		},
 		"metrics": {
-			"explain_text": "Toggles visibility of debug metrics."
+			"explain_text": "Toggles visibility of debug metric labels."
 		},
 		"dump": {
 			"explain_text": "Writes all current console output to a new text file in the dump directory."
 		},
 		"newline": {
-			"explain_text": "Logs an empty line to the console."
+			"explain_text": "Logs an empty line to the console without showing the input command. Intended for very light formatting of console output."
 		},
 		"loremipsum": {
-			"explain_text": "Prints a paragraph of text."
+			"explain_text": "Prints a paragraph of text. Intended for use with text print debugging."
 		},
 		"quit": {
-			"explain_text": "Closes the game directly through the SceneTree by calling get_tree().quit()."
+			"explain_text": "Closes the game directly through the SceneTree by calling get_tree().quit(). Not recommended for use with debug exports."
 		}
 	}
 }

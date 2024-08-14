@@ -1,10 +1,11 @@
 extends CanvasLayer
 
-const VERSION_TEXT: String = 					" -- DevUtils [v0.0.6] -- "
+const VERSION_TEXT: String = 					" -- DevUtils [v0.0.7] -- "
 const BYLINE: String = 							"      by turboshook     \n"
 const COMMAND_TAG: String = 					"-> "
 const RETURN_VALUE_TAG: String = 				"<- "
 const ERROR_TAG: String = 						" x "
+const BLANK_TAG: String = 						"   "
 const CONSOLE_OUTPUT_BACKGROUND_COLOR: Color =	Color("323353")
 const CONSOLE_OUTPUT_BACKGROUND_ALPHA: float = 	0.25
 const CONSOLE_INPUT_COLOR: Color = 				Color("323353")
@@ -20,6 +21,7 @@ const ERROR_UNKNOWN_COMMAND: String = 			"unknown command"
 const ERROR_ARGUMENT_COUNT: String = 			"arg count mismatch"
 const ERROR_ARGUMENT_TYPE_MISMATCH: String = 	"arg type mismatch"
 const ERROR_BLACKLISTED_FUNCTION: String = 		"function not allowed: "
+const MISSING_EXPLAIN_TEXT_STRING: String =		"No explain text provided for this command."
 const HELP_TEXT: String = 						"\nHello! Welcome to DevUtils. \n\nTo get started, use the 'commandlist' command to see all commands in the database. To learn about a specific command, type 'explain' followed by that command's name. \n\nArbitrary GDScript can be provided using the 'exp' command. For example, 'exp 2+2' will return 4. \n\nRefer to the docs to learn how to implement your own custom commands. \n\nI hope this helps you!"
 const LOREM_IPSUM: String = 					"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla malesuada sed tortor sed sagittis. Duis mattis at magna non volutpat. Phasellus ut metus dignissim, tempus arcu at, fermentum velit. Phasellus tincidunt dapibus massa, at ultrices nunc lobortis eu. Fusce ac nisi porttitor, molestie tortor ut, posuere ligula."
 const SCROLL_HOLD_TIME: float = 				0.25
@@ -36,7 +38,8 @@ enum LogTypes {
 	INFO,
 	COMMAND,
 	RETURN_VALUE,
-	ERROR
+	ERROR,
+	BLANK
 }
 
 var _expression_base: Node = null
@@ -311,16 +314,15 @@ func _commandlist() -> String:
 	return return_string
 
 func _explain(command_name: String) -> String:
-	var return_text: String = str("'", command_name, "' is not a recognized command.")
 	var categories: Array = _command_dictionary.keys()
 	for category in categories:
 		if not _command_dictionary[category].has(command_name): 
 			continue
-		var command: Dictionary = _command_dictionary[category][command_name]
-		if not command.has("explain_text"):
-			return_text = "no explain text provided for command"
-		return_text = command["explain_text"]
-	return return_text
+		var command_dictionary: Dictionary = _command_dictionary[category][command_name]
+		if not command_dictionary.has("explain_text"):
+			return MISSING_EXPLAIN_TEXT_STRING
+		return command_dictionary["explain_text"]
+	return str("'", command_name, "' is not a recognized command.")
 
 func _help() -> String:
 	return HELP_TEXT
@@ -354,7 +356,7 @@ func _dump_output() -> void:
 	dump.close()
 
 func _log_empty_line() -> void:
-	_console_log(" ", LogTypes.RETURN_VALUE)
+	_console_log(" ", LogTypes.BLANK)
 
 func _lorem_ipsum() -> void:
 	_console_log(LOREM_IPSUM, LogTypes.RETURN_VALUE)
@@ -484,6 +486,9 @@ func _console_log(log_text: String, log_type: LogTypes) -> void:
 			_console_output.push_color(ERROR_COLOR)
 			_console_output.append_text(str("\n", output_string))
 			_console_output.pop()
+		LogTypes.BLANK:
+			output_string = str(BLANK_TAG, output_string)
+			_console_output.append_text(str("\n", output_string))
 
 func _on_console_output_resized() -> void:
 	# simulate scroll
@@ -502,7 +507,7 @@ func _handle_command(command_text: String) -> void:
 	var words: PackedStringArray = command_text.split(" ", false)
 	if words.size() == 0: return
 	
-	if words[0] == "exp": 
+	if words[0] == EXPRESSION_EVALUATION_TAG: 
 		_handle_expression(command_text)
 		return 
 	
@@ -519,6 +524,7 @@ func _handle_command(command_text: String) -> void:
 				break
 		if command_found:
 			break
+	
 	if !command_found:
 		_console_log(str(ERROR_UNKNOWN_COMMAND, " '", words[0], "'"), LogTypes.ERROR)
 		return
@@ -549,6 +555,11 @@ func _handle_command(command_text: String) -> void:
 	
 	var cast_args: Array = []
 	for i in range(command["arg_count"]):
+		
+		# special case: clean otherwise valid float inputs given as integers
+		if command["arg_types"][i] == ArgTypes.FLOAT and command_args[i].is_valid_int() and not command_args[i].contains("."):
+			command_args[i] += ".0"
+		
 		var arg_type: int = _get_arg_type(command_args[i])
 		if arg_type != command["arg_types"][i]:
 			var info: String = str(" (expected ", _get_type_string(command["arg_types"][i]), ", received ", _get_type_string(arg_type), " at position ", i, ")")

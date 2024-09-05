@@ -64,11 +64,9 @@ var _use_shader_background: bool = false
 # Example of a command in commands.json:
 # 
 # "command_text": {
-#	"arg_count": x,
+#	"arg_count": x, # (not required when there are zero args)
 #	"missing_base_error": "Some helpful error text.",
-#	"base": "true",
-#	"help_text:" "Some descriptive help text."
-#
+#	"explain_text:" "Some descriptive help text."
 # }
 # The "arg_types" and "callable" keys are added on initialization
 
@@ -296,7 +294,7 @@ func _init_builtin_commands() -> void:
 	init_command("clearhist", _clear_history)
 	init_command("clearall", _clear_all)
 	init_command("metrics", _show_metrics)
-	init_command("dump", _dump_output)
+	init_command("dump", _dump_console_output)
 	init_command("newline", _log_empty_line)
 	init_command("loremipsum", _lorem_ipsum)
 	init_command("quit", get_tree().quit)
@@ -345,15 +343,33 @@ func _clear_all() -> void:
 func _show_metrics() -> void:
 	_metrics_container.visible = !_metrics_container.visible
 
-func _dump_output() -> void:
+func _dump_console_output() -> String:
+	return dump_file_text("console_output", _console_output.get_parsed_text())
+
+func dump_file_text(file_name_identifier: String, data: String) -> String:
 	var module_directory: String = get_script().resource_path.get_base_dir()
 	if not DirAccess.dir_exists_absolute(str(module_directory) + "/dump"):
 		DirAccess.make_dir_absolute(str(module_directory) + "/dump")
 	var datetime_string: String = Time.get_datetime_string_from_system().replace(":", "-")
-	var file_name: String = str(module_directory + "/dump/output_dump-" + datetime_string + ".txt")
-	var dump: FileAccess = FileAccess.open(file_name, FileAccess.WRITE)
-	dump.store_line(_console_output.get_parsed_text())
+	var file_path: String = module_directory + "/dump/"
+	var file_name: String = file_name_identifier + "-" + datetime_string + ".txt"
+	var dump: FileAccess = FileAccess.open(file_path + file_name, FileAccess.WRITE)
+	dump.store_line(data)
 	dump.close()
+	return file_name
+
+func dump_file_json(file_name_identifier: String, data: Dictionary) -> String:
+	var module_directory: String = get_script().resource_path.get_base_dir()
+	if not DirAccess.dir_exists_absolute(str(module_directory) + "/dump"):
+		DirAccess.make_dir_absolute(str(module_directory) + "/dump")
+	var datetime_string: String = Time.get_datetime_string_from_system().replace(":", "-")
+	var file_path: String = module_directory + "/dump/"
+	var file_name: String = file_name_identifier + "-" + datetime_string + ".json"
+	var dump: FileAccess = FileAccess.open(file_path + file_name, FileAccess.WRITE)
+	var string_data: String = JSON.stringify(data, "", false)
+	dump.store_line(string_data)
+	dump.close()
+	return file_name
 
 func _log_empty_line() -> void:
 	_console_log(" ", LogTypes.BLANK)

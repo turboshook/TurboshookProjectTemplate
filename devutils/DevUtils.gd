@@ -387,24 +387,24 @@ func init_command(command_string: String, callable: Callable, args: Array[ArgTyp
 	
 	command_string = command_string.replace(" ", "")
 	var command_found: bool = false
-	var command_category: String = ""
-	for category in _command_dictionary.keys():
-		command_category = category
-		for command in _command_dictionary[category].keys():
+	var command_base: String = ""
+	for base in _command_dictionary.keys():
+		command_base = base
+		for command in _command_dictionary[base].keys():
 			if command_string == command:
 				command_found = true
 				break
 		if command_found:
 			break
 	if !command_found:
-		printerr("DevUtils @ init_command(): Failed to init command ", command_string, " as it does not exist in commands.json.")
+		printerr("DevUtils @ init_command(): Failed to init command '", command_string, "'; it does not exist in commands.json.")
 		return
-	if args.size() != _command_dictionary[command_category][command_string]["arg_count"]:
-		printerr("DevUtils @ init_command(): Failed to init command ", command_string, ". Expected ", _command_dictionary[command_string]["arg_count"], " arguments, but was provided ", args.size(), ".")
+	if args.size() != _command_dictionary[command_base][command_string]["arg_count"]:
+		printerr("DevUtils @ init_command(): Failed to init command '", command_string, "'; expected ", _command_dictionary[command_base][command_string]["arg_count"], " arguments, but was provided ", args.size(), ".")
 		return
 	for arg_type in args:
-		_command_dictionary[command_category][command_string]["arg_types"].append(arg_type)
-	_command_dictionary[command_category][command_string]["callable"] = callable
+		_command_dictionary[command_base][command_string]["arg_types"].append(arg_type)
+	_command_dictionary[command_base][command_string]["callable"] = callable
 
 func _input(event: InputEvent) -> void:
 	

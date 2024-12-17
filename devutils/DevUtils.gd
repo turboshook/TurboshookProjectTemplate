@@ -298,6 +298,7 @@ func _init_builtin_commands() -> void:
 	init_command("metrics", _show_metrics)
 	init_command("dump", _dump_console_output)
 	init_command("screenshot", _take_screenshot)
+	init_command("timescale", Engine.set_time_scale, [ArgTypes.FLOAT])
 	init_command("newline", _log_empty_line)
 	init_command("loremipsum", _lorem_ipsum)
 	init_command("quit", get_tree().quit)

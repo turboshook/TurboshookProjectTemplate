@@ -28,6 +28,10 @@
 		"screenshot": {
 			"explain_text": "Takes a screenshot of the current root SubViewport and saves it as a .png file in the dump directory. The image is scaled to the project's window size overrides. If those values are zero, the image is left at the base resolution of the SubViewport."
 		},
+		"timescale": {
+			"arg_count": 1,
+			"explain_text": "Sets Engine.time_scale with a float value. Controls speed of all delta time events. Can make physics events less precise."
+		},
 		"newline": {
 			"explain_text": "Logs an empty line to the console without showing the input command. Intended for very light formatting of console output."
 		},

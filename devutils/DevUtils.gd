@@ -1,18 +1,19 @@
 extends CanvasLayer
 
-const VERSION_TEXT: String = 					" -- DevUtils [v0.0.7] -- "
+const VERSION_TEXT: String = 					" -- DevUtils [v0.0.8] -- "
 const BYLINE: String = 							"      by turboshook     \n"
 const COMMAND_TAG: String = 					"-> "
 const RETURN_VALUE_TAG: String = 				"<- "
 const ERROR_TAG: String = 						" x "
 const BLANK_TAG: String = 						"   "
-const CONSOLE_OUTPUT_BACKGROUND_COLOR: Color =	Color("323353")
+const CONSOLE_OUTPUT_BACKGROUND_COLOR: Color =	Color("292f65")
 const CONSOLE_OUTPUT_BACKGROUND_ALPHA: float = 	0.25
-const CONSOLE_INPUT_COLOR: Color = 				Color("323353")
-const INFO_COLOR: Color = 						Color("cddf6c")
-const COMMAND_COLOR: Color = 					Color("c7dcd0")
+const CONSOLE_INPUT_BACKGROUND_COLOR: Color = 	Color("292f65")
+const CONSOLE_INPUT_BACKGROUND_ALPHA: float = 	0.5
+const INFO_COLOR: Color = 						Color("7be1f6")
+const COMMAND_COLOR: Color = 					Color("9a8fe0")
 const RETURN_VALUE_COLOR: Color = 				Color("ffffff")
-const ERROR_COLOR: Color = 						Color("e83b3b")
+const ERROR_COLOR: Color = 						Color("cf5d8b")
 const EXPRESSION_EVALUATION_TAG: String = 		"exp"
 const DEBUG_METRIC_LABEL_PATH: String = 		"res://devutils/utils/DebugMetricLabel.tscn"
 const OUTPUT_SCROLL_INCREMENT: float = 			8.0
@@ -73,8 +74,7 @@ var _use_shader_background: bool = false
 func _ready() -> void:
 	
 	_enabled = OS.is_debug_build()
-	if !_enabled:
-		return
+	if !_enabled: return
 	
 	_use_shader_background = (ProjectSettings.get_setting("rendering/renderer/rendering_method") == "forward_plus")
 	
@@ -172,6 +172,9 @@ func _init_builtin_metrics() -> void:
 	init_metric("mem", _debug_get_static_memory_usage, false)
 
 func init_metric(metric_name: String, update_callable: Callable, left_panel: bool = true) -> void:
+	
+	if !_enabled: return
+	
 	# metric already exists
 	if metric_name in _metrics_labels.keys():
 		_metrics_labels[metric_name].init(metric_name, update_callable)
@@ -245,10 +248,9 @@ func _build_console() -> void:
 	_console_input.size = Vector2(_base_viewport_size.x, 16.0)
 	_console_input.position = Vector2(0.0, _base_viewport_size.y - 16.0)
 	_console_input.set_deferred("anchors_preset", Control.PRESET_BOTTOM_WIDE)
-	var _input_focus_stylebox: StyleBoxFlat = _devutils_theme.get_stylebox("focus", "LineEdit")
-	_input_focus_stylebox.bg_color = CONSOLE_INPUT_COLOR
 	var _input_normal_stylebox: StyleBoxFlat = _devutils_theme.get_stylebox("normal", "LineEdit")
-	_input_normal_stylebox.bg_color = CONSOLE_INPUT_COLOR
+	_input_normal_stylebox.bg_color = CONSOLE_INPUT_BACKGROUND_COLOR
+	_input_normal_stylebox.bg_color.a = CONSOLE_INPUT_BACKGROUND_ALPHA
 	_console_input.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	
 	_console_input.text_submitted.connect(_on_console_input_submitted)
@@ -295,6 +297,7 @@ func _init_builtin_commands() -> void:
 	init_command("clearall", _clear_all)
 	init_command("metrics", _show_metrics)
 	init_command("dump", _dump_console_output)
+	init_command("screenshot", _take_screenshot)
 	init_command("newline", _log_empty_line)
 	init_command("loremipsum", _lorem_ipsum)
 	init_command("quit", get_tree().quit)
@@ -366,9 +369,23 @@ func dump_file_json(file_name_identifier: String, data: Dictionary) -> String:
 	var file_path: String = module_directory + "/dump/"
 	var file_name: String = file_name_identifier + "-" + datetime_string + ".json"
 	var dump: FileAccess = FileAccess.open(file_path + file_name, FileAccess.WRITE)
-	var string_data: String = JSON.stringify(data, "", false)
+	var string_data: String = JSON.stringify(data, "\t", false)
 	dump.store_line(string_data)
 	dump.close()
+	return file_name
+
+func _take_screenshot() -> String:
+	var module_directory: String = get_script().resource_path.get_base_dir()
+	if not DirAccess.dir_exists_absolute(str(module_directory) + "/dump"):
+		DirAccess.make_dir_absolute(str(module_directory) + "/dump")
+	var file_path: String = module_directory + "/dump/"
+	var datetime_string: String = Time.get_datetime_string_from_system().replace(":", "-")
+	var file_name: String = "screenshot-" + datetime_string + ".png"
+	_console_container.visible = false
+	await RenderingServer.frame_post_draw
+	var image: Image = get_viewport().get_texture().get_image()
+	image.save_png(file_path + file_name)
+	_console_container.visible = true
 	return file_name
 
 func _log_empty_line() -> void:
@@ -382,8 +399,7 @@ func _debug_get_static_memory_usage() -> String:
 
 func init_command(command_string: String, callable: Callable, args: Array[ArgTypes] = []) -> void:
 	
-	if !_enabled:
-		return
+	if !_enabled: return
 	
 	command_string = command_string.replace(" ", "")
 	var command_found: bool = false
@@ -408,23 +424,18 @@ func init_command(command_string: String, callable: Callable, args: Array[ArgTyp
 
 func _input(event: InputEvent) -> void:
 	
-	if !_enabled:
-		return
+	if !_enabled: return
 	
 	if is_open():
-		if event.is_action_pressed("history_up"):
-			_check_history(-1)
-		elif event.is_action_pressed("history_down"):
-			_check_history(1)
-		if event.is_action_pressed("devutils"): 
-			_close_console()
+		if event.is_action_pressed("history_up"): _check_history(-1)
+		elif event.is_action_pressed("history_down"): _check_history(1)
+		if event.is_action_pressed("devutils"): _close_console()
 	elif event.is_action_pressed("devutils"):
 		_open_console()
 
 func _physics_process(delta: float) -> void:
 	
-	if !_enabled:
-		return
+	if !_enabled: return
 	
 	var scroll_released: bool = (Input.is_action_just_released("ui_page_up") or Input.is_action_just_released("ui_page_down"))
 	var both_held: bool = (Input.is_action_pressed("ui_page_up") and Input.is_action_pressed("ui_page_down"))
@@ -564,7 +575,7 @@ func _handle_command(command_text: String) -> void:
 		return
 	
 	if command["arg_count"] == 0:
-		var no_arg_result: Variant = command["callable"].call()
+		var no_arg_result: Variant = await command["callable"].call()
 		if no_arg_result == null: return
 		_console_log(no_arg_result, LogTypes.RETURN_VALUE)
 		return
@@ -583,7 +594,7 @@ func _handle_command(command_text: String) -> void:
 			return 
 		cast_args.append(_cast_type(command_args[i], arg_type))
 	
-	var arg_result: Variant = command["callable"].callv(cast_args)
+	var arg_result: Variant = await command["callable"].callv(cast_args)
 	if arg_result == null: return
 	_console_log(arg_result, LogTypes.RETURN_VALUE)
 

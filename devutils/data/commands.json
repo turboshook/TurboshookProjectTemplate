@@ -26,7 +26,7 @@
 			"explain_text": "Writes all current console output to a new text file in the dump directory."
 		},
 		"screenshot": {
-			"explain_text": "Takes a screenshot of the current root SubViewport. The screenshot is saved as a .png file and is placed in the dump directory."
+			"explain_text": "Takes a screenshot of the current root SubViewport and saves it as a .png file in the dump directory. The image is scaled to the project's window size overrides. If those values are zero, the image is left at the base resolution of the SubViewport."
 		},
 		"newline": {
 			"explain_text": "Logs an empty line to the console without showing the input command. Intended for very light formatting of console output."

@@ -384,6 +384,17 @@ func _take_screenshot() -> String:
 	_console_container.visible = false
 	await RenderingServer.frame_post_draw
 	var image: Image = get_viewport().get_texture().get_image()
+	var window_width_override: int = ProjectSettings.get_setting("display/window/size/window_width_override")
+	var window_height_override: int = ProjectSettings.get_setting("display/window/size/window_height_override")
+	@warning_ignore("integer_division")
+	var scale_factor_x: int = max(1, (window_width_override / image.get_width()))
+	@warning_ignore("integer_division")
+	var scale_factor_y: int = max(1, (window_height_override / image.get_height()))
+	image.resize(
+		image.get_width() * scale_factor_x, 
+		image.get_height() * scale_factor_y, 
+		Image.INTERPOLATE_NEAREST
+	)
 	image.save_png(file_path + file_name)
 	_console_container.visible = true
 	return file_name
@@ -465,7 +476,7 @@ func _check_history(index_change: int) -> void:
 	else:
 		var recalled_command_text: String = _command_history[_command_history_index]
 		_console_input.text = recalled_command_text
-		await get_tree().process_frame # womp womp
+		await RenderingServer.frame_post_draw # awaits Control transform
 		_console_input.caret_column = recalled_command_text.length()
 
 func _scroll_output(scroll_direction: int) -> void:

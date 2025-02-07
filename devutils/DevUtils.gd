@@ -243,8 +243,9 @@ func _build_console() -> void:
 	_console_input = LineEdit.new()
 	_console_container.add_child(_console_input)
 	_console_input.name = "ConsoleInput"
-	_console_input.set_caret_blink_enabled(true)
-	_console_input.set_caret_blink_interval(0.25)
+	_console_input.keep_editing_on_text_submit = true
+	_console_input.caret_blink = true
+	_console_input.caret_blink_interval = 0.25
 	_console_input.size = Vector2(_base_viewport_size.x, 16.0)
 	_console_input.position = Vector2(0.0, _base_viewport_size.y - 16.0)
 	_console_input.set_deferred("anchors_preset", Control.PRESET_BOTTOM_WIDE)
@@ -398,6 +399,7 @@ func _take_screenshot() -> String:
 	)
 	image.save_png(file_path + file_name)
 	_console_container.visible = true
+	_console_input.grab_focus.call_deferred()
 	return file_name
 
 func _log_empty_line() -> void:

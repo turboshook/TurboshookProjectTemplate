@@ -15,7 +15,7 @@ const COMMAND_COLOR: Color = 					Color("9a8fe0")
 const RETURN_VALUE_COLOR: Color = 				Color("ffffff")
 const ERROR_COLOR: Color = 						Color("cf5d8b")
 const EXPRESSION_EVALUATION_TAG: String = 		"exp"
-const DEBUG_METRIC_LABEL_PATH: String = 		"res://devutils/utils/DebugMetricLabel.tscn"
+const DEBUG_METRIC_LABEL_PATH: String = 		"res://devutils/utils/debug_matric_label/debug_metric_label.tscn"
 const OUTPUT_SCROLL_INCREMENT: float = 			8.0
 const ERROR_MISSING_BASE: String = 				"missing base for [command]"
 const ERROR_UNKNOWN_COMMAND: String = 			"unknown command"
@@ -584,7 +584,7 @@ func _handle_command(command_text: String) -> void:
 		command_args.append(words[i])
 	
 	if command_args.size() != command["arg_count"]:
-		var info: String = str(" (expected ", command["arg_count"], ", received ", command_args.size(), ")")
+		var info: String = str(" (expected ", int(command["arg_count"]), ", received ", command_args.size(), ")")
 		_console_log(str(ERROR_ARGUMENT_COUNT, info), LogTypes.ERROR)
 		return
 	

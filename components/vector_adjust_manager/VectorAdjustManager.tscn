@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://b6ke78d45yo6f"]
 
-[ext_resource type="Script" path="res://components/vector_adjust_manager/VectorAdjustManager.gd" id="1_jgy36"]
+[ext_resource type="Script" uid="uid://coehc6tlfdbp8" path="res://components/vector_adjust_manager/VectorAdjustManager.gd" id="1_jgy36"]
 
 [node name="VectorAdjustManager" type="Node"]
 script = ExtResource("1_jgy36")

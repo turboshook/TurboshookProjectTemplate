@@ -1,6 +1,0 @@
-[gd_resource type="Resource" script_class="WRSMWorldDataDictionary" load_steps=2 format=3 uid="uid://b23hiwftykshg"]
-
-[ext_resource type="Script" uid="uid://bu8be4idmjnac" path="res://wrsm/resources/WRSMWorldDataDictionary.gd" id="1_gbxk5"]
-
-[resource]
-script = ExtResource("1_gbxk5")

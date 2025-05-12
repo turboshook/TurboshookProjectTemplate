@@ -81,22 +81,3 @@ func play_sfx_loop(sfx_name: String, loop_duration: float = 1.0) -> void:
 func _on_sfx_loop_timer_timeout() -> void:
 	_looping_stream.stream.loop = false
 	_looping_stream.stop()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

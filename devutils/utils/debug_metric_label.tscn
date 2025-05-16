@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://k0ldp3q2vaw8"]
 
-[ext_resource type="Theme" uid="uid://bf6dlyqc2txvw" path="res://devutils/resources/devutils_theme.tres" id="1_7koev"]
-[ext_resource type="Script" uid="uid://co1g6dgh4kq2q" path="res://devutils/utils/DebugMetricLabel.gd" id="2_s3t1g"]
+[ext_resource type="Theme" uid="uid://bf6dlyqc2txvw" path="res://devutils/resources/devutils_theme.tres" id="1_r16i5"]
+[ext_resource type="Script" uid="uid://b21dn3fca0m31" path="res://devutils/utils/debug_metric_label.gd" id="2_xd4l2"]
 
 [node name="DebugMetricLabel" type="Control"]
 custom_minimum_size = Vector2(0, 10)
@@ -11,8 +11,8 @@ offset_right = 160.0
 offset_bottom = 10.0
 grow_horizontal = 2
 grow_vertical = 2
-theme = ExtResource("1_7koev")
-script = ExtResource("2_s3t1g")
+theme = ExtResource("1_r16i5")
+script = ExtResource("2_xd4l2")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
 layout_mode = 1

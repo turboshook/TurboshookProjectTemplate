@@ -48,7 +48,7 @@ func register_input(action_name: String, buffer_limit_time: float) -> void:
 ## An input must be provided via [method InputBufferManager.register_input] for this method to work.
 func is_action_buffered(action_name: String) -> bool:
 	if not _input_action_dictionary.has(action_name): return false
-	return _input_action_dictionary[action_name].current_buffer <= _input_action_dictionary[action_name].target_buffer_time
+	return _input_action_dictionary[action_name].current_buffer <= _input_action_dictionary[action_name].buffer_limit
 
 ## Check whether an input has been pressed within an arbitrary buffer limit. 
 ##

@@ -9,3 +9,4 @@ enum Source {
 
 @export var source: Source = Source.WORLD
 @export var damage: int = 1
+@export var tag: String = ""

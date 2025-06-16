@@ -447,7 +447,7 @@ func _input(event: InputEvent) -> void:
 	elif event.is_action_pressed("devutils"):
 		_open_console()
 
-func _physics_process(delta: float) -> void:
+func _process(delta: float) -> void:
 	
 	if !_enabled: return
 	

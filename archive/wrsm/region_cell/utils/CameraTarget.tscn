@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://b68svw32qk3m0"]
 
-[ext_resource type="Script" uid="uid://cxvfdca25jc4x" path="res://archive/wrsm/region_cell/utils/CameraTarget.gd" id="1_8l2v3"]
+[ext_resource type="Script" uid="uid://dsm8g8wj10e1v" path="res://archive/wrsm/region_cell/utils/CameraTarget.gd" id="1_8l2v3"]
 
 [node name="CameraTarget" type="Marker2D"]
 script = ExtResource("1_8l2v3")

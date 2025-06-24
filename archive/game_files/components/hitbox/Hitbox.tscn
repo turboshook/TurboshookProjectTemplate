@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://cofg4dtla3f58"]
 
-[ext_resource type="Script" uid="uid://rcnfl84li3fb" path="res://archive/game_files/components/hitbox/Hitbox.gd" id="1_11mad"]
+[ext_resource type="Script" uid="uid://dmv76b7k0tka8" path="res://archive/game_files/components/hitbox/Hitbox.gd" id="1_11mad"]
 
 [node name="Hitbox" type="Area2D"]
 collision_layer = 1073741824

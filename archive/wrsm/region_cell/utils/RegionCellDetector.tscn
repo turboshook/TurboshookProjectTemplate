@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://bqed1078lb54f"]
 
-[ext_resource type="Script" uid="uid://crnw3dg5r542h" path="res://archive/wrsm/region_cell/utils/RegionCellDetector.gd" id="1_q4466"]
+[ext_resource type="Script" uid="uid://dsss7ampa0dye" path="res://archive/wrsm/region_cell/utils/RegionCellDetector.gd" id="1_q4466"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_e6uey"]
 size = Vector2(16, 16)

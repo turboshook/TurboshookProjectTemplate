@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://k0ldp3q2vaw8"]
 
 [ext_resource type="Theme" uid="uid://bf6dlyqc2txvw" path="res://devutils/resources/devutils_theme.tres" id="1_r16i5"]
-[ext_resource type="Script" uid="uid://b21dn3fca0m31" path="res://devutils/utils/debug_metric_label.gd" id="2_xd4l2"]
+[ext_resource type="Script" uid="uid://ht367wqi6qww" path="res://devutils/utils/debug_metric_label.gd" id="2_xd4l2"]
 
 [node name="DebugMetricLabel" type="Control"]
 custom_minimum_size = Vector2(0, 10)

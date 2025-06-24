@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://dhr36f7nqme2b"]
 
-[ext_resource type="Script" uid="uid://cndqk4ak6jmm8" path="res://archive/wrsm/world_camera/WorldCamera.gd" id="1_d83fw"]
+[ext_resource type="Script" uid="uid://bv2hb5bx714sc" path="res://archive/wrsm/world_camera/WorldCamera.gd" id="1_d83fw"]
 
 [node name="WorldCamera" type="Camera2D"]
 process_mode = 3

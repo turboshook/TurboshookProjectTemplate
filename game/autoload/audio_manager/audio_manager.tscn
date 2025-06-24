@@ -4,3 +4,6 @@
 
 [node name="AudioManager" type="Node"]
 script = ExtResource("1_cshc2")
+
+[node name="BGMStreamPlayer" type="AudioStreamPlayer" parent="."]
+bus = &"Music"

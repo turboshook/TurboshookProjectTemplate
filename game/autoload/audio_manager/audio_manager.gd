@@ -1,11 +1,28 @@
+# Translation of the concepts and structure described here: https://www.youtube.com/watch?v=bdsHf08QmZ4
 extends Node
 
+@onready var _bgm_stream_player: AudioStreamPlayer = $BGMStreamPlayer
+var _sounds: Dictionary = {}
 
-# Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	pass # Replace with function body.
+	for child: Node in get_children():
+		if !(child is SoundQueue) and !(child is SoundPool): continue
+		_sounds[child.name] = child
 
+func play_bgm(bgm_stream: AudioStream) -> void:
+	if _bgm_stream_player.is_playing():
+		stop_bgm()
+		await get_tree().create_timer(0.25).timeout
+	_bgm_stream_player.stream = bgm_stream
+	_bgm_stream_player.play()
+	_bgm_stream_player.volume_linear = 0.2 # temp
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
+func stop_bgm(fade_out_time: float = 0.25) -> void:
+	if not _bgm_stream_player.is_playing(): return
+	var volume_down_tween: Tween = create_tween()
+	volume_down_tween.tween_property(_bgm_stream_player, "volume_linear", 0.0, fade_out_time)
+	await volume_down_tween.finished
+
+func play_sound(sound_name: String) -> void:
+	if not _sounds.has(sound_name): return
+	_sounds[sound_name].play()

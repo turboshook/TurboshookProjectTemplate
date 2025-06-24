@@ -1,6 +1,6 @@
 extends CanvasLayer
 
-const VERSION_TEXT: String = 					" -- DevUtils [v0.0.8] -- "
+const VERSION_TEXT: String = 					" -- DevUtils [v0.0.9] -- "
 const BYLINE: String = 							"      by turboshook     \n"
 const COMMAND_TAG: String = 					"-> "
 const RETURN_VALUE_TAG: String = 				"<- "
@@ -15,7 +15,7 @@ const COMMAND_COLOR: Color = 					Color("9a8fe0")
 const RETURN_VALUE_COLOR: Color = 				Color("ffffff")
 const ERROR_COLOR: Color = 						Color("cf5d8b")
 const EXPRESSION_EVALUATION_TAG: String = 		"exp"
-const DEBUG_METRIC_LABEL_PATH: String = 		"res://devutils/utils/debug_metric_label.tscn"
+const DEBUG_METRIC_LABEL_REL_PATH: String = 	"/utils/debug_metric_label.tscn"
 const OUTPUT_SCROLL_INCREMENT: float = 			8.0
 const ERROR_MISSING_BASE: String = 				"missing base for [command]"
 const ERROR_UNKNOWN_COMMAND: String = 			"unknown command"
@@ -43,6 +43,7 @@ enum LogTypes {
 	BLANK
 }
 
+var _module_directory: String = ""
 var _expression_base: Node = null
 var _max_scroll_height: float = 0.0
 var _metrics_container: Control = null
@@ -62,20 +63,12 @@ var _scroll_direction: int = 0
 var _enabled: bool = true
 var _use_shader_background: bool = false
 
-# Example of a command in commands.json:
-# 
-# "command_text": {
-#	"arg_count": x, # (not required when there are zero args)
-#	"missing_base_error": "Some helpful error text.",
-#	"explain_text:" "Some descriptive help text."
-# }
-# The "arg_types" and "callable" keys are added on initialization
-
 func _ready() -> void:
 	
 	_enabled = OS.is_debug_build()
 	if !_enabled: return
 	
+	_module_directory = get_script().resource_path.get_base_dir()
 	_use_shader_background = (ProjectSettings.get_setting("rendering/renderer/rendering_method") == "forward_plus")
 	
 	# Create required input actions
@@ -118,7 +111,7 @@ func _ready() -> void:
 	if viewport_y_mod_line_height != 0: # I am so smart :)
 		_max_scroll_height = viewport_y_mod_line_height - OUTPUT_SCROLL_INCREMENT
 	
-	_devutils_theme = load("res://devutils/resources/devutils_theme.tres")
+	_devutils_theme = load(_module_directory + "/resources/devutils_theme.tres")
 	
 	# Metrics
 	_build_metric_layer()
@@ -181,7 +174,7 @@ func init_metric(metric_name: String, update_callable: Callable, left_panel: boo
 		return
 	
 	# new metric
-	var metric_label: Control = load(DEBUG_METRIC_LABEL_PATH).instantiate()
+	var metric_label: Control = load(_module_directory + DEBUG_METRIC_LABEL_REL_PATH).instantiate()
 	if left_panel:
 		_metrics_container.get_node("LeftPanel").add_child(metric_label)
 	else:
@@ -209,7 +202,7 @@ func _build_console() -> void:
 		shader_background.set_deferred("anchors_preset", Control.PRESET_FULL_RECT)
 		shader_background.size = _base_viewport_size
 		shader_background.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		shader_background.material = load("res://devutils/resources/background_shader_material.tres")
+		shader_background.material = load(_module_directory + "/resources/background_shader_material.tres")
 	
 	# Console Background Rect
 	var console_background: ColorRect = ColorRect.new()
@@ -259,10 +252,10 @@ func _build_console() -> void:
 	_console_container.visible = false
 
 func _import_command_dictionary() -> void:
-	if !FileAccess.file_exists("res://devutils/data/commands.json"):
+	if !FileAccess.file_exists(_module_directory + "/data/commands.json"):
 		printerr("DevUtils @ _import_command_dictionary(): COMMAND_FILE_PATH is invalid.")
 		return
-	var file_access: FileAccess = FileAccess.open("res://devutils/data/commands.json", FileAccess.READ)
+	var file_access: FileAccess = FileAccess.open(_module_directory + "/data/commands.json", FileAccess.READ)
 	_command_dictionary = JSON.parse_string(file_access.get_as_text())
 	file_access.close()
 	if _command_dictionary == null:
@@ -278,10 +271,10 @@ func _import_command_dictionary() -> void:
 			_command_dictionary[category][command]["callable"] = null
 
 func _import_function_blacklist() -> void:
-	if !FileAccess.file_exists("res://devutils/data/function_blacklist.json"):
+	if !FileAccess.file_exists(_module_directory + "/data/function_blacklist.json"):
 		printerr("DevUtils @ _import_function_blacklist(): file path is invalid.")
 		return
-	var file_access: FileAccess = FileAccess.open("res://devutils/data/function_blacklist.json", FileAccess.READ)
+	var file_access: FileAccess = FileAccess.open(_module_directory + "/data/function_blacklist.json", FileAccess.READ)
 	var dictionary: Dictionary = JSON.parse_string(file_access.get_as_text())
 	_function_blacklist = dictionary["expressions"]
 	file_access.close()
@@ -352,11 +345,10 @@ func _dump_console_output() -> String:
 	return dump_file_text("console_output", _console_output.get_parsed_text())
 
 func dump_file_text(file_name_identifier: String, data: String) -> String:
-	var module_directory: String = get_script().resource_path.get_base_dir()
-	if not DirAccess.dir_exists_absolute(str(module_directory) + "/dump"):
-		DirAccess.make_dir_absolute(str(module_directory) + "/dump")
+	if not DirAccess.dir_exists_absolute(_module_directory + "/dump"):
+		DirAccess.make_dir_absolute(_module_directory + "/dump")
 	var datetime_string: String = Time.get_datetime_string_from_system().replace(":", "-")
-	var file_path: String = module_directory + "/dump/"
+	var file_path: String = _module_directory + "/dump/"
 	var file_name: String = file_name_identifier + "-" + datetime_string + ".txt"
 	var dump: FileAccess = FileAccess.open(file_path + file_name, FileAccess.WRITE)
 	dump.store_line(data)
@@ -364,11 +356,10 @@ func dump_file_text(file_name_identifier: String, data: String) -> String:
 	return file_name
 
 func dump_file_json(file_name_identifier: String, data: Dictionary) -> String:
-	var module_directory: String = get_script().resource_path.get_base_dir()
-	if not DirAccess.dir_exists_absolute(str(module_directory) + "/dump"):
-		DirAccess.make_dir_absolute(str(module_directory) + "/dump")
+	if not DirAccess.dir_exists_absolute(_module_directory + "/dump"):
+		DirAccess.make_dir_absolute(_module_directory + "/dump")
 	var datetime_string: String = Time.get_datetime_string_from_system().replace(":", "-")
-	var file_path: String = module_directory + "/dump/"
+	var file_path: String = _module_directory + "/dump/"
 	var file_name: String = file_name_identifier + "-" + datetime_string + ".json"
 	var dump: FileAccess = FileAccess.open(file_path + file_name, FileAccess.WRITE)
 	var string_data: String = JSON.stringify(data, "\t", false)
@@ -377,10 +368,9 @@ func dump_file_json(file_name_identifier: String, data: Dictionary) -> String:
 	return file_name
 
 func _take_screenshot() -> String:
-	var module_directory: String = get_script().resource_path.get_base_dir()
-	if not DirAccess.dir_exists_absolute(str(module_directory) + "/dump"):
-		DirAccess.make_dir_absolute(str(module_directory) + "/dump")
-	var file_path: String = module_directory + "/dump/"
+	if not DirAccess.dir_exists_absolute(_module_directory + "/dump"):
+		DirAccess.make_dir_absolute(_module_directory + "/dump")
+	var file_path: String = _module_directory + "/dump/"
 	var datetime_string: String = Time.get_datetime_string_from_system().replace(":", "-")
 	var file_name: String = "screenshot-" + datetime_string + ".png"
 	_console_container.visible = false

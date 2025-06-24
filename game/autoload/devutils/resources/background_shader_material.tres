@@ -1,6 +1,6 @@
 [gd_resource type="ShaderMaterial" load_steps=4 format=3 uid="uid://g6gaxy02vrdx"]
 
-[ext_resource type="Shader" path="res://devutils/resources/noise_offset_shader.gdshader" id="1_hrmbm"]
+[ext_resource type="Shader" uid="uid://ddwe75g1dxi24" path="res://game/autoload/devutils/resources/noise_offset_shader.gdshader" id="1_hrmbm"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_f2vpr"]
 

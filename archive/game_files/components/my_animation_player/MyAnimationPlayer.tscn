@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://df1kq1uwx7bi"]
-
-[ext_resource type="Script" uid="uid://c52w77sx5bt3" path="res://archive/game_files/components/my_animation_player/MyAnimationPlayer.gd" id="1_kvclh"]
-
-[node name="MyAnimationPlayer" type="AnimationPlayer"]
-script = ExtResource("1_kvclh")

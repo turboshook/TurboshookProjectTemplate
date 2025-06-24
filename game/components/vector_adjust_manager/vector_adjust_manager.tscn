@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://b6ke78d45yo6f"]
+
+[ext_resource type="Script" uid="uid://njvn5mh6mrtx" path="res://game/components/vector_adjust_manager/vector_adjust_manager.gd" id="1_jgy36"]
+
+[node name="VectorAdjustManager" type="Node"]
+script = ExtResource("1_jgy36")

@@ -1,6 +1,0 @@
-[gd_resource type="Resource" script_class="WRSMNodeReferences" load_steps=2 format=3 uid="uid://dt43x7klmc3cf"]
-
-[ext_resource type="Script" uid="uid://q2pl1vcbiif0" path="res://archive/wrsm/resources/WRSMNodeReferences.gd" id="1_pxtex"]
-
-[resource]
-script = ExtResource("1_pxtex")

@@ -15,21 +15,22 @@ func _ready() -> void:
 	screen_transition_manager.screen_fade_out(0.0)
 	_free_current_scene()
 	if not _skip_intro:
-		await get_tree().create_timer(0.5).timeout
 		var intro_scene: IntroductionScreen = load(INTRO_SCREEN_UID).instantiate()
 		current_scene_container.add_child(intro_scene)
-		intro_scene.intro_complete.connect(_on_intro_complete)
+		intro_scene.intro_finished.connect(_on_intro_finished)
+		await get_tree().create_timer(0.25).timeout
 		await screen_transition_manager.screen_fade_in().finished
 		return
-	_on_intro_complete()
+	_on_intro_finished()
 
-func _on_intro_complete() -> void:
+func _on_intro_finished() -> void:
 	await screen_transition_manager.screen_fade_out().finished
 	_free_current_scene()
 	if not _skip_main_menu:
 		var main_menu: Control = load(MAIN_MENU_UID).instantiate()
 		current_scene_container.add_child(main_menu)
 		main_menu.main_scene_requested.connect(_load_main_scene)
+		await get_tree().create_timer(0.25).timeout
 		await screen_transition_manager.screen_fade_in().finished
 		return
 	_load_main_scene()
@@ -42,8 +43,13 @@ func _load_main_scene() -> void:
 		return
 	var main_scene: Node = _main_scene_packed.instantiate()
 	current_scene_container.add_child(main_scene)
-	### can init main scene here ###
+	_init_main_scene(main_scene)
+	await get_tree().create_timer(0.25).timeout
 	await screen_transition_manager.screen_fade_in().finished
 
 func _free_current_scene() -> void:
 	for scene: Node in current_scene_container.get_children(): scene.queue_free()
+
+	### PROJECT SPECIFIC LOGIC HERE ###
+func _init_main_scene(main_scene: Node) -> void:
+	main_scene.screen_transition = screen_transition_manager

@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://crar046dhlaut"]
 
-[ext_resource type="Script" uid="uid://dxtt3mogmur5i" path="res://game/ui/intro_screen/intro_screen.gd" id="1_ee4mx"]
+[ext_resource type="Script" uid="uid://dxtt3mogmur5i" path="res://game/ui/template/intro_screen/intro_screen.gd" id="1_ee4mx"]
 [ext_resource type="Texture2D" uid="uid://b2tlwp6vd085l" path="res://icon.svg" id="2_rhswu"]
 
 [sub_resource type="Animation" id="Animation_rhswu"]

@@ -3,16 +3,12 @@ class_name IntroductionScreen
 
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 
-signal intro_complete
+signal intro_finished
 
 func _ready() -> void:
 	var animations: PackedStringArray = animation_player.get_animation_list()
 	if animations.size() == 0: 
-		intro_complete.emit()
+		get_tree().create_timer(1.0).timeout.connect(func(_anim_name: String): intro_finished.emit())
 		return
+	animation_player.animation_finished.connect(func(_anim_name: String): intro_finished.emit())
 	animation_player.play(animations[0])
-
-func _process(_delta: float) -> void:
-	if not animation_player.is_playing():
-		intro_complete.emit()
-		return

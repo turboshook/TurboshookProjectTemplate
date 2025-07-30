@@ -1,5 +1,5 @@
 // modified version of this: https://godotshaders.com/shader/snap-screen-colors-to-palette-posterize/
-// I removed the color array that needed to be manually set in the editor and replaced it with a 
+// I removed the color array that needed to be manually set in the editor and replaced it with a
 // sampler2D variable that can accept a color palette texture.
 #define FLT_MAX 3.402823466e+2
 

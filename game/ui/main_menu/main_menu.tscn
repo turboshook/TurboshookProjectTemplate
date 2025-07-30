@@ -1,0 +1,54 @@
+[gd_scene load_steps=2 format=3 uid="uid://dc5hu774r52wf"]
+
+[ext_resource type="Script" uid="uid://c3bghy654iu4a" path="res://game/ui/main_menu/main_menu.gd" id="1_gof3u"]
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_gof3u")
+metadata/_edit_lock_ = true
+
+[node name="DefaultTitleLabel" type="Label" parent="."]
+layout_mode = 0
+offset_left = 160.0
+offset_top = 64.0
+offset_right = 224.0
+offset_bottom = 87.0
+text = "Game"
+horizontal_alignment = 1
+
+[node name="OptionButtonContainer" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 152.0
+offset_top = 104.0
+offset_right = 232.0
+offset_bottom = 200.0
+alignment = 1
+
+[node name="StartButton" type="Button" parent="OptionButtonContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+text = "Start"
+metadata/_edit_lock_ = true
+
+[node name="OptionsButton" type="Button" parent="OptionButtonContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+text = "Options"
+metadata/_edit_lock_ = true
+
+[node name="CreditsButton" type="Button" parent="OptionButtonContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+text = "Credits"
+metadata/_edit_lock_ = true
+
+[node name="ExitButton" type="Button" parent="OptionButtonContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 8
+text = "Exit"
+metadata/_edit_lock_ = true

@@ -44,12 +44,13 @@ The following additions have been made to the built-in UI inputs:
 - `HurtBox`: `Area2D`-derived scene that detects collisions with `HitBox` instances and makes their `HitData` available to their parent scene for handling.
 
 # Configuring DevUtils
-**DevUtils** is a lightweight developer console that can be accessed while the project is running in-editor in or in debug mode by pressing the ``` key. It comes with some general-purpose commands, but new commands can be added by updating the `/game/autoload/devutils/data/commands.json` file. For example:
+**DevUtils** is a lightweight developer console that can be accessed while the project is running in-editor in or in debug mode by pressing the `~` key. It comes with some general-purpose commands, but new commands can be added by updating the `/game/autoload/devutils/data/commands.json` file. For example:
 ```
 "NewCommandBase": {
 	"commandstring": {
 		"arg_count": 0,
-		"explain_text": "The text that will be printed to the console when using the explain command."
+		"explain_text": "The text that will be printed to the console when using the explain command.",
+		"missing_base_error": "Some helpful error text."
 	}
 }
 ```
@@ -58,13 +59,16 @@ Commands are organized under logical structures referred to internally as "bases
 "Player": {
 	"refill_health": {
 		"arg_count": 0,
-		"explain_text": "Tops of the Player's health."
+		"explain_text": "Tops of the Player's health.",
+		"missing_base_error": "Player scene not active in the SceneTree."
 	}
 }
 ```
 This structure communicates that the `refill_health` command requires some player object to be active in the SceneTree to function. Running valid commands related to objects that are not active in the SceneTree will result in a **missing base error** in the console output.
 
-When a command is defined in `commands.json`, it can be initialized from any script by accessing the `Devutils` autoload. For example, initializing the above `refill_health` command might look like this:
+NOTE: All of the command fields are optional. A command that takes 0 arguments can be successfully defined with `"command_name": {}` in `commands.json`.
+
+After the command is defined, it can be initialized from any script by accessing the `Devutils` autoload. For example, initializing the above `refill_health` command might look like this:
 ```
 extends CharacterBody2D
 class_name Player
@@ -85,7 +89,8 @@ Arguments can be passed to commands in the console and require minimal extra con
 "Player": {
 	"set_health": {
 		"arg_count": 1,
-		"explain_text": "Sets the Player's health to a specific value."
+		"explain_text": "Sets the Player's health to a specific value.",
+		"missing_base_error": "Player scene not active in the SceneTree."
 	}
 }
 ```

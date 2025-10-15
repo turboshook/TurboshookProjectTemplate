@@ -1,6 +1,6 @@
-# MyProjectTemplate
+# TurboshookProjectTemplate
 
-Template project to accelerate game development and provide a flexible for framework for common operations.
+Hello! This is a template project I use to accelerate development and provide a framework for things I do in a lot of my games. The content will be subject to change over time as I add or refine implementations based on my own needs. 
 
 # Project Settings Overrides
 ## Input
@@ -42,3 +42,70 @@ The following additions have been made to the built-in UI inputs:
 - `HitBox`: `Area2D`-derived scene that contains an instance of `HitData`.
 - `HitBoxManager`: `Node2D`-derived scene that can instantiate and manage a `HitBox` instance.
 - `HurtBox`: `Area2D`-derived scene that detects collisions with `HitBox` instances and makes their `HitData` available to their parent scene for handling.
+
+# Configuring DevUtils
+**DevUtils** is a lightweight developer console that can be accessed while the project is running in-editor in or in debug mode by pressing the ``` key. It comes with some general-purpose commands, but new commands can be added by updating the `/game/autoload/devutils/data/commands.json` file. For example:
+```
+"NewCommandBase": {
+	"commandstring": {
+		"arg_count": 0,
+		"explain_text": "The text that will be printed to the console when using the explain command."
+	}
+}
+```
+Commands are organized under logical structures referred to internally as "bases" that generally describe object dependencies for a command to function properly. For example, you might consider adding the following command to refill your player character's health:
+```
+"Player": {
+	"refill_health": {
+		"arg_count": 0,
+		"explain_text": "Tops of the Player's health."
+	}
+}
+```
+This structure communicates that the `refill_health` command requires some player object to be active in the SceneTree to function. Running valid commands related to objects that are not active in the SceneTree will result in a **missing base error** in the console output.
+
+When a command is defined in `commands.json`, it can be initialized from any script by accessing the `Devutils` autoload. For example, initializing the above `refill_health` command might look like this:
+```
+extends CharacterBody2D
+class_name Player
+
+const MAX_HEALTH: int = 3
+var current_health: int = 3
+
+func _ready() -> void:
+	DevUtils.init_command("refill_health", _devutils_refill_health)
+
+func _devutils_refill_health() -> void:
+	current_health = MAX_HEALTH
+```
+With everything properly configured and the above player object instantiated in the SceneTree, the `_devutils_refill_health` function can be executed arbitrarily at runtime by opening the `DevUtils` console and entering `refill_health`.
+
+Arguments can be passed to commands in the console and require minimal extra configuration. For starters, the command needs to be defined in `commands.json` with a nonzero `arg_count`, like so:
+```
+"Player": {
+	"set_health": {
+		"arg_count": 1,
+		"explain_text": "Sets the Player's health to a specific value."
+	}
+}
+```
+The command then needs to be initialized using the optional `args: Array[ArgTypes]` argument in `Devutils.init_command()`. The size of the array must equal the `arg_type` defined for that command in `commands.json` and the members of the array must be members of the `DevUtils.ArgTypes` enum. 
+
+Initializing the above command in the example player script from before would look like this:
+```
+extends CharacterBody2D
+class_name Player
+
+const MAX_HEALTH: int = 3
+var current_health: int = 3
+
+func _ready() -> void:
+	DevUtils.init_command("refill_health", _devutils_refill_health)
+	DevUtils.init_command("set_health", _devutils_set_health, [DevUtils.ArgTypes.INT])
+
+func _devutils_refill_health() -> void:
+	current_health = MAX_HEALTH
+
+func _devutils_set_health(set_value: int) -> void:
+	current_health = set_value
+```

@@ -17,9 +17,9 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-Global="*res://game/autoload/global.gd"
-AudioManager="*res://game/autoload/audio_manager/audio_manager.tscn"
-DevUtils="*res://game/autoload/devutils/devutils.gd"
+Global="*res://main/autoload/global.gd"
+Devutils="*res://main/autoload/devutils/devutils.gd"
+AudioManager="*res://main/autoload/audio_manager/audio_manager.tscn"
 
 [input]
 

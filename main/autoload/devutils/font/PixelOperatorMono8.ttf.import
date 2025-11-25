@@ -3,12 +3,12 @@
 importer="font_data_dynamic"
 type="FontFile"
 uid="uid://bvrigdpskny64"
-path="res://.godot/imported/PixelOperatorMono8.ttf-0bfe1e1419e5a62b68829447d4172c1f.fontdata"
+path="res://.godot/imported/PixelOperatorMono8.ttf-c7e6b988f983e741857ec46dcebb8fa1.fontdata"
 
 [deps]
 
-source_file="res://game/autoload/devutils/font/PixelOperatorMono8.ttf"
-dest_files=["res://.godot/imported/PixelOperatorMono8.ttf-0bfe1e1419e5a62b68829447d4172c1f.fontdata"]
+source_file="res://main/autoload/devutils/font/PixelOperatorMono8.ttf"
+dest_files=["res://.godot/imported/PixelOperatorMono8.ttf-c7e6b988f983e741857ec46dcebb8fa1.fontdata"]
 
 [params]
 
@@ -21,6 +21,7 @@ msdf_pixel_range=8
 msdf_size=48
 allow_system_fallback=true
 force_autohinter=false
+modulate_color_glyphs=false
 hinting=1
 subpixel_positioning=1
 keep_rounding_remainders=true

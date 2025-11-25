@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://lffd08o0e5hh"]
+
+[ext_resource type="Script" uid="uid://pfabd6xxad54" path="res://main/components/my_sprite_3d/my_sprite_3d.gd" id="1_i31u1"]
+
+[node name="MySprite3D" type="Sprite3D"]
+pixel_size = 0.0156
+texture_filter = 0
+script = ExtResource("1_i31u1")

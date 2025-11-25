@@ -29,7 +29,7 @@ The following additions have been made to the built-in UI inputs:
 - `MySprite2D`: Extended Sprite2D with extra features.
 - `MySprite3D`: Extended Sprite3D with extra features.
 - `Node2DPhysicsInterpolater`: Provides out-of-the-box physics interpolation to 2D scenes. Works better with follower Camera2Ds than the current built-in solutions and can be used to achieve a "pixel perfect" look.
-- `Node3DPhysicsInterpolater`: Provides out-of-the-box physics interpolation to 2D scenes.
+- `Node3DPhysicsInterpolater`: Provides out-of-the-box physics interpolation to 3D scenes.
 - `VectorAdjustManager`: Can be used to snap Vector2Ds to regular increments. Useful for forcing 8-way movement in top-down games, for example.
 ## AudioManager
 - `SoundQueue`: Used to smoothly play multiple copies of a sound without cutting off a stream mid-playback.

@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3 uid="uid://8va0kq0dccio"]
+
+[ext_resource type="Script" uid="uid://ctgrldd65pyua" path="res://main/main.gd" id="1_pjrb6"]
+[ext_resource type="PackedScene" uid="uid://cf2u4q6uej65i" path="res://main/utils/screen_transition_manager.tscn" id="2_xwkvk"]
+
+[node name="Main" type="Node"]
+script = ExtResource("1_pjrb6")
+
+[node name="CurrentSceneContainer" type="Node" parent="."]
+
+[node name="ScreenTransitionManager" parent="." instance=ExtResource("2_xwkvk")]
+
+[node name="ScreenSpacePostProcessLayer" type="CanvasLayer" parent="."]

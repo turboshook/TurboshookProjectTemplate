@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://yutjmfvci0f8"
-path.s3tc="res://.godot/imported/color_gradient_texture.png-f75f5567c765796cf34c3f7d61e36e9c.s3tc.ctex"
+path.s3tc="res://.godot/imported/color_gradient_texture.png-b48fcc966c4345882055bba84cde868f.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://main/shaders/cel_shaded_material_3d/color_gradient_texture.png"
-dest_files=["res://.godot/imported/color_gradient_texture.png-f75f5567c765796cf34c3f7d61e36e9c.s3tc.ctex"]
+source_file="res://main/shaders/spatial/cel_shaded_material_3d/color_gradient_texture.png"
+dest_files=["res://.godot/imported/color_gradient_texture.png-b48fcc966c4345882055bba84cde868f.s3tc.ctex"]
 
 [params]
 

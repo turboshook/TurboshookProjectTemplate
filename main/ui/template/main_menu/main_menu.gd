@@ -1,10 +1,11 @@
 extends Control
 class_name MainMenu
 
-@onready var start_button: Button = $OptionButtonContainer/StartButton
-@onready var options_button: Button = $OptionButtonContainer/OptionsButton
-@onready var credits_button: Button = $OptionButtonContainer/CreditsButton
-@onready var exit_button: Button = $OptionButtonContainer/ExitButton
+@onready var option_button_container: VBoxContainer = $CenterContainer/VBoxContainer/OptionButtonContainer
+@onready var start_button: Button = $CenterContainer/VBoxContainer/OptionButtonContainer/StartButton
+@onready var options_button: Button = $CenterContainer/VBoxContainer/OptionButtonContainer/OptionsButton
+@onready var credits_button: Button = $CenterContainer/VBoxContainer/OptionButtonContainer/CreditsButton
+@onready var exit_button: Button = $CenterContainer/VBoxContainer/OptionButtonContainer/ExitButton
 
 signal main_scene_requested
 
@@ -31,5 +32,5 @@ func _on_credits_button_pressed() -> void:
 	# do something here
 
 func _set_buttons_enabled(set_value: bool) -> void:
-	for button: Button in $OptionButtonContainer.get_children():
+	for button: Button in option_button_container.get_children():
 		button.set_disabled(!set_value)

@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://crar046dhlaut"]
 
-[ext_resource type="Script" uid="uid://dxtt3mogmur5i" path="res://game/ui/template/intro_screen/intro_screen.gd" id="1_ee4mx"]
+[ext_resource type="Script" uid="uid://dxtt3mogmur5i" path="res://main/ui/template/intro_screen/intro_screen.gd" id="1_ee4mx"]
 [ext_resource type="Texture2D" uid="uid://b2tlwp6vd085l" path="res://icon.svg" id="2_rhswu"]
 
 [sub_resource type="Animation" id="Animation_rhswu"]
@@ -32,14 +32,16 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_ee4mx")
+metadata/_edit_lock_ = true
+
+[node name="Icon" type="Sprite2D" parent="."]
+position = Vector2(32, 32)
+scale = Vector2(0.25, 0.25)
+texture = ExtResource("2_rhswu")
+metadata/_edit_lock_ = true
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
 &"": SubResource("AnimationLibrary_bbijv")
 }
 autoplay = "Test"
-
-[node name="Icon" type="Sprite2D" parent="."]
-position = Vector2(192, 112)
-scale = Vector2(0.25, 0.25)
-texture = ExtResource("2_rhswu")

@@ -52,4 +52,4 @@ func _free_current_scene() -> void:
 
 	### PROJECT SPECIFIC LOGIC HERE ###
 func _init_main_scene(main_scene: Node) -> void:
-	main_scene.screen_transition = screen_transition_manager
+	pass

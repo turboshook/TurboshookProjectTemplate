@@ -23,7 +23,7 @@ func _ready() -> void:
 	#flip_h = true
 
 func _process(_delta: float) -> void:
-	if not _current_flicker_interval: return
+	if not face_camera: return
 	if _current_camera != get_viewport().get_camera_3d():
 		_current_camera = get_viewport().get_camera_3d()
 	var xz_look_at_pos: Vector3 = Vector3(

@@ -1,0 +1,31 @@
+[gd_scene load_steps=5 format=3 uid="uid://8odobv5rls26"]
+
+[ext_resource type="Script" uid="uid://dy4f463gdh3ud" path="res://main/utils/first_person_controller/first_person_controller.gd" id="1_4xhjy"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_m0cg8"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4xhjy"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_ar2wi"]
+material = SubResource("StandardMaterial3D_4xhjy")
+
+[node name="FirstPersonController" type="CharacterBody3D"]
+script = ExtResource("1_4xhjy")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CapsuleShape3D_m0cg8")
+metadata/_edit_lock_ = true
+
+[node name="CapsuleBody" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("CapsuleMesh_ar2wi")
+metadata/_edit_lock_ = true
+
+[node name="CameraAnchor" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+metadata/_edit_lock_ = true
+
+[node name="Camera3D" type="Camera3D" parent="CameraAnchor"]
+current = true
+metadata/_edit_lock_ = true

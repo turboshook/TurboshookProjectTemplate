@@ -18,7 +18,7 @@ config/icon="res://icon.svg"
 [autoload]
 
 Global="*res://main/autoload/global.gd"
-Devutils="*res://main/autoload/devutils/devutils.gd"
+DevUtils="*res://main/autoload/devutils/devutils.gd"
 AudioManager="*res://main/autoload/audio_manager/audio_manager.tscn"
 
 [input]

@@ -1,7 +1,7 @@
 [gd_resource type="Theme" load_steps=4 format=3 uid="uid://bf6dlyqc2txvw"]
 
-[ext_resource type="StyleBox" uid="uid://bjsyjqge4pbu6" path="res://game/autoload/devutils/resources/line_edit_stylebox.tres" id="1_np7ty"]
-[ext_resource type="FontFile" uid="uid://bvrigdpskny64" path="res://game/autoload/devutils/font/PixelOperatorMono8.ttf" id="2_1eohu"]
+[ext_resource type="StyleBox" uid="uid://bjsyjqge4pbu6" path="res://main/autoload/devutils/resources/line_edit_stylebox.tres" id="1_np7ty"]
+[ext_resource type="FontFile" uid="uid://bvrigdpskny64" path="res://main/autoload/devutils/font/PixelOperatorMono8.ttf" id="2_1eohu"]
 
 [sub_resource type="FontVariation" id="FontVariation_q5b8i"]
 base_font = ExtResource("2_1eohu")

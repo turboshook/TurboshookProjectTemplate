@@ -7,7 +7,7 @@ class_name PlayerDetector
 @export var enabled: bool = true
 @export var _supplement_with_raycast: bool = true
 var _world_check: RayCast3D
-var _player_body: Player
+var _player_body: Node3D
 
 func _init() -> void:
 	set_collision_layer_value(1, false)
@@ -23,12 +23,10 @@ func _ready() -> void:
 
 func _on_body_entered(body: Node3D) -> void:
 	if not enabled: return
-	if not body is Player: return
 	_player_body = body
 
-func _on_body_exited(body: Node3D) -> void:
+func _on_body_exited(_body: Node3D) -> void:
 	if not enabled: return
-	if not body is Player: return
 	_player_body = null
 
 func can_see_player() -> bool:
@@ -43,5 +41,5 @@ func can_see_player() -> bool:
 	if _world_check.is_colliding(): return false
 	return not _player_body.is_dead
 
-func get_player() -> Player:
+func get_player() -> Node3D:
 	return _player_body

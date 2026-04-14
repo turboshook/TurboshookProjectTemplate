@@ -51,5 +51,6 @@ func _free_current_scene() -> void:
 	for scene: Node in current_scene_container.get_children(): scene.queue_free()
 
 	### PROJECT SPECIFIC LOGIC HERE ###
+@warning_ignore("unused_parameter")
 func _init_main_scene(main_scene: Node) -> void:
 	pass

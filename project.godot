@@ -12,7 +12,7 @@ config_version=5
 
 config/name="TurboshookProjectTemplate"
 run/main_scene="uid://8va0kq0dccio"
-config/features=PackedStringArray("4.5")
+config/features=PackedStringArray("4.6")
 config/icon="res://icon.svg"
 
 [autoload]
@@ -20,6 +20,21 @@ config/icon="res://icon.svg"
 Global="*res://main/autoload/global.gd"
 DevUtils="*res://main/autoload/devutils/devutils.gd"
 AudioManager="*res://main/autoload/audio_manager/audio_manager.tscn"
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/stretch/mode="canvas_items"
+
+[file_customization]
+
+folder_colors={
+"res://export/": "red",
+"res://import/": "green",
+"res://main/": "blue",
+"res://script_templates/": "gray"
+}
 
 [input]
 

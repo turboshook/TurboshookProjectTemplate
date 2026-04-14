@@ -1,8 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://dc5hu774r52wf"]
+[gd_scene format=3 uid="uid://dc5hu774r52wf"]
 
 [ext_resource type="Script" uid="uid://c3bghy654iu4a" path="res://main/ui/template/main_menu/main_menu.gd" id="1_gof3u"]
 
-[node name="MainMenu" type="Control"]
+[node name="MainMenu" type="Control" unique_id=904159736]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -12,7 +12,7 @@ grow_vertical = 2
 script = ExtResource("1_gof3u")
 metadata/_edit_lock_ = true
 
-[node name="CenterContainer" type="CenterContainer" parent="."]
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=759108134]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -20,37 +20,37 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer" unique_id=951575086]
 layout_mode = 2
 
-[node name="DefaultTitleLabel" type="Label" parent="CenterContainer/VBoxContainer"]
+[node name="DefaultTitleLabel" type="Label" parent="CenterContainer/VBoxContainer" unique_id=1709759333]
 layout_mode = 2
 text = "Game"
 horizontal_alignment = 1
 
-[node name="OptionButtonContainer" type="VBoxContainer" parent="CenterContainer/VBoxContainer"]
+[node name="OptionButtonContainer" type="VBoxContainer" parent="CenterContainer/VBoxContainer" unique_id=1478784232]
 layout_mode = 2
 alignment = 1
 
-[node name="StartButton" type="Button" parent="CenterContainer/VBoxContainer/OptionButtonContainer"]
+[node name="StartButton" type="Button" parent="CenterContainer/VBoxContainer/OptionButtonContainer" unique_id=601718251]
 layout_mode = 2
 theme_override_font_sizes/font_size = 8
 text = "Start"
 metadata/_edit_lock_ = true
 
-[node name="OptionsButton" type="Button" parent="CenterContainer/VBoxContainer/OptionButtonContainer"]
+[node name="OptionsButton" type="Button" parent="CenterContainer/VBoxContainer/OptionButtonContainer" unique_id=275420930]
 layout_mode = 2
 theme_override_font_sizes/font_size = 8
 text = "Options"
 metadata/_edit_lock_ = true
 
-[node name="CreditsButton" type="Button" parent="CenterContainer/VBoxContainer/OptionButtonContainer"]
+[node name="CreditsButton" type="Button" parent="CenterContainer/VBoxContainer/OptionButtonContainer" unique_id=1601807558]
 layout_mode = 2
 theme_override_font_sizes/font_size = 8
 text = "Credits"
 metadata/_edit_lock_ = true
 
-[node name="ExitButton" type="Button" parent="CenterContainer/VBoxContainer/OptionButtonContainer"]
+[node name="ExitButton" type="Button" parent="CenterContainer/VBoxContainer/OptionButtonContainer" unique_id=519963026]
 layout_mode = 2
 theme_override_font_sizes/font_size = 8
 text = "Exit"

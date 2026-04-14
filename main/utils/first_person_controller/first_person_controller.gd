@@ -26,8 +26,8 @@ func _physics_process(_delta: float) -> void:
 	var forward_input: float = -1.0 if Input.is_key_pressed(KEY_W) else 0.0
 	var back_input: float = 1.0 if Input.is_key_pressed(KEY_S) else 0.0
 	
-	_forward_input = forward_input - back_input
-	_strafe_input = left_input - right_input
+	_forward_input = forward_input + back_input
+	_strafe_input = left_input + right_input
 	
 	if _forward_input == 0.0 and _strafe_input == 0.0: return
 	var move_direction: Vector3 = Vector3(

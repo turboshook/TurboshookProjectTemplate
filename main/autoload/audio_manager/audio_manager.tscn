@@ -1,9 +1,9 @@
-[gd_scene load_steps=2 format=3 uid="uid://2qb2242uxury"]
+[gd_scene format=3 uid="uid://2qb2242uxury"]
 
-[ext_resource type="Script" uid="uid://jl5vrkbvx31o" path="res://game/autoload/audio_manager/audio_manager.gd" id="1_cshc2"]
+[ext_resource type="Script" uid="uid://jl5vrkbvx31o" path="res://main/autoload/audio_manager/audio_manager.gd" id="1_cshc2"]
 
-[node name="AudioManager" type="Node"]
+[node name="AudioManager" type="Node" unique_id=2032131834]
 script = ExtResource("1_cshc2")
 
-[node name="BGMStreamPlayer" type="AudioStreamPlayer" parent="."]
+[node name="BGMStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=908107898]
 bus = &"Music"

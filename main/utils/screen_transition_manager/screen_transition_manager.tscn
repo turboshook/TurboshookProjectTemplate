@@ -1,11 +1,11 @@
-[gd_scene load_steps=2 format=3 uid="uid://cf2u4q6uej65i"]
+[gd_scene format=3 uid="uid://cf2u4q6uej65i"]
 
 [ext_resource type="Script" uid="uid://dc1wcs401pg10" path="res://main/utils/screen_transition_manager/screen_transition_manager.gd" id="1_a4amd"]
 
-[node name="ScreenTransitionManager" type="CanvasLayer"]
+[node name="ScreenTransitionManager" type="CanvasLayer" unique_id=442945439]
 script = ExtResource("1_a4amd")
 
-[node name="ScreenFadeRect" type="ColorRect" parent="."]
+[node name="ScreenFadeRect" type="ColorRect" parent="." unique_id=1330009474]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0

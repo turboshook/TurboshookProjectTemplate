@@ -1,31 +1,51 @@
 [gd_scene format=3 uid="uid://8odobv5rls26"]
 
 [ext_resource type="Script" uid="uid://dy4f463gdh3ud" path="res://main/utils/first_person_controller/first_person_controller.gd" id="1_4xhjy"]
+[ext_resource type="PackedScene" uid="uid://bdavvuox1vu0g" path="res://main/components/camera_controller/camera_controller.tscn" id="2_xf6jl"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_ar2wi"]
+sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+
+[sub_resource type="Sky" id="Sky_xf6jl"]
+sky_material = SubResource("ProceduralSkyMaterial_ar2wi")
+
+[sub_resource type="Environment" id="Environment_3vuvd"]
+background_mode = 2
+sky = SubResource("Sky_xf6jl")
+tonemap_mode = 2
+glow_enabled = true
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_m0cg8"]
+radius = 0.35
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4xhjy"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_ar2wi"]
 material = SubResource("StandardMaterial3D_4xhjy")
+radius = 0.35
 
-[node name="FirstPersonController" type="CharacterBody3D" unique_id=1548236051]
+[node name="FirstPersonController" type="CharacterBody3D" unique_id=2102967226]
+collision_layer = 2
 script = ExtResource("1_4xhjy")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1098028715]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=897598330]
+environment = SubResource("Environment_3vuvd")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1628079843]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 shape = SubResource("CapsuleShape3D_m0cg8")
 metadata/_edit_lock_ = true
 
-[node name="CapsuleBody" type="MeshInstance3D" parent="." unique_id=567119458]
+[node name="CapsuleBody" type="MeshInstance3D" parent="." unique_id=1921231344]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 mesh = SubResource("CapsuleMesh_ar2wi")
 metadata/_edit_lock_ = true
 
-[node name="CameraAnchor" type="Node3D" parent="." unique_id=259008030]
+[node name="CameraAnchor" type="Node3D" parent="." unique_id=2119971929]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
-metadata/_edit_lock_ = true
 
-[node name="Camera3D" type="Camera3D" parent="CameraAnchor" unique_id=440196014]
-current = true
-metadata/_edit_lock_ = true
+[node name="CameraController" parent="CameraAnchor" unique_id=1622471272 node_paths=PackedStringArray("parent_controller", "camera_anchor") instance=ExtResource("2_xf6jl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+parent_controller = NodePath("../..")
+camera_anchor = NodePath("..")

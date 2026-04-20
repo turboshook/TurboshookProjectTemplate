@@ -11,9 +11,11 @@ config_version=5
 [application]
 
 config/name="TurboshookProjectTemplate"
+config/version="0.0.1"
 run/main_scene="uid://8va0kq0dccio"
 config/features=PackedStringArray("4.6")
 config/icon="res://icon.svg"
+config/turboshook_template_version="1.0.9"
 
 [autoload]
 

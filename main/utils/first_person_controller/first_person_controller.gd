@@ -5,7 +5,7 @@ const LOOK_SENSITIVITY: float = 0.0025
 
 @onready var capsule_body: MeshInstance3D = $CapsuleBody
 @onready var camera_anchor: Node3D = $CameraAnchor
-@onready var player_camera: Camera3D = $CameraAnchor/Camera3D
+@onready var camera_controller: Node3D = $CameraAnchor/CameraController
 
 var _forward_input: float = 0.0
 var _strafe_input: float = 0.0
@@ -35,9 +35,3 @@ func _physics_process(_delta: float) -> void:
 	).rotated(Vector3.UP, rotation.y)
 	set_velocity(move_direction * BASE_MOVE_SPEED)
 	move_and_slide()
-
-func _input(event: InputEvent) -> void:
-	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
-		rotation.y -= event.relative.x * LOOK_SENSITIVITY
-		camera_anchor.rotation.x -= event.relative.y * LOOK_SENSITIVITY
-		camera_anchor.rotation_degrees.x = clamp(camera_anchor.rotation_degrees.x, -89.0, 89.0)

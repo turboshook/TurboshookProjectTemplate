@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://b26disbrn62b5"]
 
-[ext_resource type="Script" uid="uid://dtqja6dnp4l30" path="res://main/components/rigid_body_pick_up/rigid_body_pick_up_manager.gd" id="1_wberk"]
+[ext_resource type="Script" uid="uid://bfw5u1u6sdxnr" path="res://main/components/rigid_body_pick_up/rigid_body_pick_up_manager.gd" id="1_wberk"]
 
 [node name="RigidBodyPickUpAreaDetector3D" type="RayCast3D" unique_id=597574948]
 collision_mask = 0

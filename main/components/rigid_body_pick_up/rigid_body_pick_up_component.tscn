@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dx6jrajrwphcc"]
 
-[ext_resource type="Script" uid="uid://bt8n60rt2swos" path="res://main/components/rigid_body_pick_up/rigid_body_pick_up_component.gd" id="1_2x8c6"]
+[ext_resource type="Script" uid="uid://qqh8qtyibev4" path="res://main/components/rigid_body_pick_up/rigid_body_pick_up_component.gd" id="1_2x8c6"]
 
 [node name="RigidBodyPickUpComponent" type="Area3D" unique_id=998625477]
 collision_mask = 0

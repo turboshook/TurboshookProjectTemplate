@@ -42,10 +42,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 mesh = SubResource("CapsuleMesh_ar2wi")
 metadata/_edit_lock_ = true
 
-[node name="CameraAnchor" type="Node3D" parent="." unique_id=2119971929]
+[node name="PhysicsAnchor" type="Node3D" parent="." unique_id=2119971929]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
 
-[node name="CameraController" parent="CameraAnchor" unique_id=1622471272 node_paths=PackedStringArray("parent_controller", "camera_anchor") instance=ExtResource("2_xf6jl")]
+[node name="CameraController" parent="." unique_id=1622471272 node_paths=PackedStringArray("parent_controller", "camera_anchor") instance=ExtResource("2_xf6jl")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
-parent_controller = NodePath("../..")
-camera_anchor = NodePath("..")
+parent_controller = NodePath("..")
+camera_anchor = NodePath("../PhysicsAnchor")

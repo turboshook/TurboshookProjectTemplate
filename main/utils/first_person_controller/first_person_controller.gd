@@ -1,25 +1,18 @@
 extends CharacterBody3D
 
 const BASE_MOVE_SPEED: float = 1.5
-const LOOK_SENSITIVITY: float = 0.0025
 
 @onready var capsule_body: MeshInstance3D = $CapsuleBody
-@onready var camera_anchor: Node3D = $CameraAnchor
-@onready var camera_controller: Node3D = $CameraAnchor/CameraController
+@onready var physics_anchor: Node3D = $PhysicsAnchor
+@onready var camera_controller: Node3D = $CameraController
 
 var _forward_input: float = 0.0
 var _strafe_input: float = 0.0
 
 func _ready() -> void:
-	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	capsule_body.visible = false
 
 func _physics_process(_delta: float) -> void:
-	
-	if Input.is_key_pressed(KEY_TAB):
-		if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
-			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-		else: Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	
 	var left_input: float = -1.0 if Input.is_key_pressed(KEY_A) else 0.0
 	var right_input: float = 1.0 if Input.is_key_pressed(KEY_D) else 0.0

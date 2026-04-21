@@ -3,8 +3,8 @@ class_name RigidBodyPickUpComponent
 
 const FOLLOW_MAX_DISTANCE_RAMP: float = 0.5
 const FOLLOW_DEADZONE: float = 0.01
-const SEGMENT_MIN_TRAVEL_SPEED: float = 0.1
-const SEGMENT_MAX_TRAVEL_SPEED: float = 16.0
+const SEGMENT_MIN_TRAVEL_SPEED: float = 0.01
+const SEGMENT_MAX_TRAVEL_SPEED: float = 8.0
 
 @export var _rigid_body: RigidBody3D 
 var _follow_target: Node3D = null
@@ -39,11 +39,11 @@ func _physics_process(delta: float) -> void:
 	
 	# Update rotation directly (I think this is fine).
 	_rigid_body.angular_velocity = Vector3.ZERO
-	_rigid_body.global_rotation.x = lerp_angle(_rigid_body.global_rotation.x, 0.0, delta * 12.0)
+	_rigid_body.global_rotation.x = lerp_angle(_rigid_body.global_rotation.x, 0.0, delta * 16.0)
 	_rigid_body.global_rotation.y = lerp_angle(
-		_rigid_body.global_rotation.y, _follow_target.global_rotation.y, 12.0 * delta
+		_rigid_body.global_rotation.y, _follow_target.global_rotation.y, 16.0 * delta
 	)
-	_rigid_body.global_rotation.z = lerp_angle(_rigid_body.global_rotation.z, 0.0, delta * 12.0)
+	_rigid_body.global_rotation.z = lerp_angle(_rigid_body.global_rotation.z, 0.0, delta * 16.0)
 
 func set_follow_target(follow_target: Node3D) -> void:
 	_rigid_body.orthonormalize() # account for excessive rotation angles

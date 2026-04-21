@@ -15,7 +15,7 @@ config/version="0.0.1"
 run/main_scene="uid://8va0kq0dccio"
 config/features=PackedStringArray("4.6")
 config/icon="res://icon.svg"
-config/turboshook_template_version="1.0.9"
+config/turboshook_template_version="1.0.10"
 
 [autoload]
 

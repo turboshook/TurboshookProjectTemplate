@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://dwc0r25vq2u56"]
+
+[ext_resource type="Script" uid="uid://cqu2idwy1lrhp" path="res://main/components/world_event/event_activator_3_d.gd" id="1_obcsv"]
+
+[node name="EventActivator3D" type="Area3D" unique_id=1306789383]
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("1_obcsv")

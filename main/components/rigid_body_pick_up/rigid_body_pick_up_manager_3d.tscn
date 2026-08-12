@@ -1,0 +1,32 @@
+[gd_scene format=3 uid="uid://c6pnevqbp7d2w"]
+
+[ext_resource type="Script" uid="uid://c5pwbwcvkr8m" path="res://main/components/rigid_body_pick_up/rigid_body_pick_up_manager_3d.gd" id="1_s3ulj"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_s3ulj"]
+albedo_color = Color(1, 0, 0, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_1w6p6"]
+material = SubResource("StandardMaterial3D_s3ulj")
+radius = 0.1
+height = 0.2
+
+[node name="RigidBodyPickUpManager3D" type="Node3D" unique_id=1851446734]
+script = ExtResource("1_s3ulj")
+
+[node name="RigidBodyPickUpComponentCheck" type="RayCast3D" parent="." unique_id=1346535920]
+visible = false
+target_position = Vector3(0, 0, -1.5)
+collision_mask = 1073741824
+collide_with_areas = true
+collide_with_bodies = false
+
+[node name="SpringArm3D" type="SpringArm3D" parent="." unique_id=865243056]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
+
+[node name="GrabbedBodyAnchor" type="Marker3D" parent="SpringArm3D" unique_id=839422110]
+
+[node name="WorldObstructionCheck" type="RayCast3D" parent="SpringArm3D/GrabbedBodyAnchor" unique_id=2059238423]
+target_position = Vector3(0, 0, 0)
+
+[node name="AnchorMesh" type="MeshInstance3D" parent="SpringArm3D/GrabbedBodyAnchor" unique_id=727074823]
+mesh = SubResource("SphereMesh_1w6p6")

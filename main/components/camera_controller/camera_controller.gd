@@ -21,7 +21,7 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
 		_mouse_input -= event.screen_relative * mouse_sensitivity
 
-func _process(_delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 	_input_rotation.x = clampf(_input_rotation.x + _mouse_input.y, deg_to_rad(-89.0), deg_to_rad(89.0))
 	_input_rotation.y += _mouse_input.x
 	

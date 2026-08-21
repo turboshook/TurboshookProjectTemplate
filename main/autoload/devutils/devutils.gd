@@ -1,6 +1,6 @@
 extends CanvasLayer
 
-const VERSION_TEXT: String = 					" -- DevUtils [v0.0.9] -- "
+const VERSION_TEXT: String = 					" -- DevUtils [v0.0.10] -- "
 const BYLINE: String = 							"      by turboshook     \n"
 const COMMAND_TAG: String = 					"-> "
 const RETURN_VALUE_TAG: String = 				"<- "
@@ -581,7 +581,7 @@ func _handle_command(command_text: String) -> void:
 	if command["arg_count"] == 0:
 		var no_arg_result: Variant = await command["callable"].call()
 		if no_arg_result == null: return
-		_console_log(no_arg_result, LogTypes.RETURN_VALUE)
+		_console_log(str(no_arg_result), LogTypes.RETURN_VALUE)
 		return
 	
 	var cast_args: Array = []
@@ -600,7 +600,7 @@ func _handle_command(command_text: String) -> void:
 	
 	var arg_result: Variant = await command["callable"].callv(cast_args)
 	if arg_result == null: return
-	_console_log(arg_result, LogTypes.RETURN_VALUE)
+	_console_log(str(arg_result), LogTypes.RETURN_VALUE)
 
 func _get_arg_type(arg_string: String) -> ArgTypes:
 	if arg_string.is_valid_int(): return ArgTypes.INT

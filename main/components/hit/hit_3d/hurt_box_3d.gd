@@ -1,5 +1,5 @@
-extends Area2D
-class_name HurtBox
+extends Area3D
+class_name HurtBox3D
 
 @export var owner_source: HitData.Source = HitData.Source.WORLD
 var _enabled: bool = true
@@ -13,11 +13,11 @@ func _ready() -> void:
 	set_collision_mask_value(32, true)
 	area_entered.connect(_on_area_entered)
 
-func _on_area_entered(area: Area2D) -> void:
+func _on_area_entered(area: Area3D) -> void:
 	if not _enabled: return
-	if not area is HitBox: return
+	if not area is HitBox3D: return
 	if not area.hit_data: return
-	var hitbox: HitBox = area
+	var hitbox: HitBox3D = area
 	if hitbox.hit_data.source == owner_source: return
 	hitbox.hit_detected.emit(self)
 	handle_hit(hitbox.hit_data)

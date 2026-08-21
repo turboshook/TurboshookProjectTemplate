@@ -27,16 +27,20 @@ def main():
     def ignore(dirpath, filenames):
         ignore_list = {
             ".git",
-            ".gitignore",
             ".gitattributes",
             script_name
         }
         return ignore_list.intersection(filenames)
 
     shutil.copytree(current_dir, destination_dir, ignore=ignore)
-
+    
     print(f" - Successfully created sibling directory at: {destination_dir}")
 
+    old_gitignore_path = Path(destination_dir / ".gitignore")
+    old_gitignore_path.unlink(missing_ok=True)
+    
+    print(f" - Deleted old .gitignore at '{old_gitignore_path}'")
+    
     project_file = destination_dir / "project.godot"
 
     if project_file.exists():
@@ -50,7 +54,7 @@ def main():
                 new_lines.append(line)
 
         project_file.write_text("\n".join(new_lines), encoding="utf-8")
-        print(f" - Updated project name in project.godot to: {project_name}")
+        print(f" - Updated project name in project.godot to '{project_name}'")
     else:
         print(" ! WARNING ! - project.godot not found in the copied directory.")
 

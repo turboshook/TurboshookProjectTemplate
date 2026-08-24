@@ -15,12 +15,12 @@ config/version="0.0.1"
 run/main_scene="uid://8va0kq0dccio"
 config/features=PackedStringArray("4.7")
 config/icon="res://icon.svg"
-config/turboshook_template_version="1.1.0"
+config/turboshook_template_version="1.1.1"
 
 [autoload]
 
 Global="*res://main/autoload/global.gd"
-DevUtils="*res://main/autoload/devutils/devutils.gd"
+DevUtils="*uid://ckbfm4fm7sftb"
 AudioManager="*res://main/autoload/audio_manager/audio_manager.tscn"
 
 [display]

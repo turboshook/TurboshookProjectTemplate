@@ -1,0 +1,5 @@
+{
+	"expressions": [
+		"queue_free()"
+	]
+}

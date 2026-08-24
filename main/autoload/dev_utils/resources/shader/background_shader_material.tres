@@ -1,6 +1,6 @@
 [gd_resource type="ShaderMaterial" format=3 uid="uid://g6gaxy02vrdx"]
 
-[ext_resource type="Shader" uid="uid://ddwe75g1dxi24" path="res://main/autoload/devutils/resources/noise_offset_shader.gdshader" id="1_hrmbm"]
+[ext_resource type="Shader" uid="uid://ddwe75g1dxi24" path="res://main/autoload/dev_utils/resources/shader/noise_offset_shader.gdshader" id="1_su8sj"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_f2vpr"]
 
@@ -11,7 +11,7 @@ noise = SubResource("FastNoiseLite_f2vpr")
 seamless = true
 
 [resource]
-shader = ExtResource("1_hrmbm")
+shader = ExtResource("1_su8sj")
 shader_parameter/NOISE_TEXTURE = SubResource("NoiseTexture2D_reffy")
 shader_parameter/strength = 4.0
 shader_parameter/uv_scaling = 1.0

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="DevUtilsSettings" format=3 uid="uid://5sryn65b7j75"]
+
+[ext_resource type="Material" uid="uid://g6gaxy02vrdx" path="res://main/autoload/dev_utils/resources/shader/background_shader_material.tres" id="1_3x1v1"]
+[ext_resource type="FontFile" uid="uid://bvrigdpskny64" path="res://main/autoload/dev_utils/resources/font/PixelOperatorMono8.ttf" id="1_eq0cx"]
+[ext_resource type="Script" uid="uid://bk1y1o4otxme8" path="res://main/autoload/dev_utils/utils/dev_utils_settings.gd" id="1_xccir"]
+[ext_resource type="Theme" uid="uid://bf6dlyqc2txvw" path="res://main/autoload/dev_utils/resources/control/dev_utils_theme.tres" id="3_gwqti"]
+
+[resource]
+script = ExtResource("1_xccir")
+dev_utils_font = ExtResource("1_eq0cx")
+dev_utils_theme = ExtResource("3_gwqti")
+console_background_shader = ExtResource("1_3x1v1")
+metadata/_custom_type_script = "uid://bk1y1o4otxme8"

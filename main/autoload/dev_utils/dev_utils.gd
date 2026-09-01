@@ -108,7 +108,7 @@ func init_metric(metric_name: String, update_callable: Callable, left_panel: boo
 
 func _init_builtin_metrics() -> void:
 	init_metric("fps", Engine.get_frames_per_second, false)
-	init_metric("mem", func(): String.humanize_size(OS.get_static_memory_usage()), false)
+	init_metric("mem", func(): return String.humanize_size(OS.get_static_memory_usage()), false)
 
 func _on_metric_invalidated(metric_name: String) -> void:
 	if _context.metrics.has(metric_name):

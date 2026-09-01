@@ -3,12 +3,12 @@ extends Node
 const INTRO_SCREEN_UID: String = "uid://crar046dhlaut"
 const MAIN_MENU_UID: String = "uid://dc5hu774r52wf"
 
+@export var current_scene_container: Node
 @export var _main_scene_packed: PackedScene
 @export_category("Debug")
 @export var _skip_intro: bool = false
 @export var _skip_main_menu: bool = false
 
-@onready var current_scene_container: Node = $CurrentSceneContainer
 @onready var screen_transition_manager: ScreenTransitionManager = $ScreenTransitionManager
 
 func _ready() -> void:

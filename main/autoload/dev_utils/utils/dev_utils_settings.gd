@@ -3,7 +3,7 @@ extends Resource
 class_name DevUtilsSettings
 
 @export_group("Meta")
-@export var version: String = "0.1.0"
+@export var version: String = "0.1.1"
 
 @export_group("Background")
 @export var console_output_background_color: Color = Color("292f65")

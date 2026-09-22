@@ -257,31 +257,14 @@ func _take_screenshot() -> String:
 	_console.open()
 	return file_name
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	
 	if !_enabled: return
 	
-	var scroll_released: bool = (Input.is_action_just_released("ui_page_up") or Input.is_action_just_released("ui_page_down"))
-	var both_held: bool = (Input.is_action_pressed("ui_page_up") and Input.is_action_pressed("ui_page_down"))
-	
-	if scroll_released or both_held:
-		_hold_accumulator = 0.0
-		return
-	
-	# Scroll action pressed
-	var scroll_direction: int = 0
-	if Input.is_action_just_pressed("output_scroll_up"):
-		scroll_direction = 1
+	if Input.is_action_pressed("output_scroll_up"):
 		_console.scroll_output(1)
-	elif Input.is_action_just_pressed("output_scroll_down"):
-		scroll_direction = -1
+	elif Input.is_action_pressed("output_scroll_down"):
 		_console.scroll_output(-1)
-	
-	# Scroll action held
-	if scroll_direction != 0:
-		_hold_accumulator += delta
-		if _hold_accumulator >= 0.25:
-			_console.scroll_output(scroll_direction)
 
 func _input(event: InputEvent) -> void:
 	

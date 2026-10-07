@@ -1,8 +1,0 @@
-[gd_scene format=3 uid="uid://cq0fks2o83yd1"]
-
-[ext_resource type="Script" uid="uid://dxxxe0ggiv3th" path="res://main/components/sound/sound_queue.gd" id="1_omihk"]
-
-[node name="SoundQueue" type="Node" unique_id=1297290272]
-script = ExtResource("1_omihk")
-
-[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=741083468]

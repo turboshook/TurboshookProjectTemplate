@@ -84,7 +84,7 @@ func initialize(parent_scene: Node) -> void:
 		current_state = initial_state
 	
 	current_state.state_parent = state_parent
-	current_state.state_change_requested.connect(_on_state_change_requested)
+	current_state.state_change_requested.connect(_handle_returned_path)
 	current_state.enter()
 	_current_state_name = current_state.name
 	initialized.emit()
@@ -129,16 +129,16 @@ func _change_state(new_state: FSMState) -> void:
 		return
 	
 	previous_state = current_state
-	previous_state.state_change_requested.disconnect(_on_state_change_requested)
+	previous_state.state_change_requested.disconnect(_handle_returned_path)
 	previous_state.exit()
 	
 	current_state = new_state
 	current_state.state_parent = state_parent
-	current_state.state_change_requested.connect(_on_state_change_requested)
+	current_state.state_change_requested.connect(_handle_returned_path)
 	current_state.enter()
 	_current_state_name = current_state.name
 	
 	state_changed.emit(current_state, previous_state)
 
-func _on_state_change_requested(state_name: String) -> void:
-	_handle_returned_path(state_name)
+func change_state(state_path: String) -> void:
+	_handle_returned_path(state_path)

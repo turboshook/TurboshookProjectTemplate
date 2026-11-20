@@ -12,7 +12,6 @@ var _context: DevUtilsContext = null
 var _canvas_layer: CanvasLayer
 var _metrics_viewer: DevUtilsMetricsViewer
 var _console: DevUtilsConsole
-var _hold_accumulator: float = 0.0
 var _enabled: bool = true
 
 func _ready() -> void:

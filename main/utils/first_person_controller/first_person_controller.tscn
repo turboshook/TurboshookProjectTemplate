@@ -3,19 +3,6 @@
 [ext_resource type="Script" uid="uid://dy4f463gdh3ud" path="res://main/utils/first_person_controller/first_person_controller.gd" id="1_4xhjy"]
 [ext_resource type="PackedScene" uid="uid://bdavvuox1vu0g" path="res://main/components/camera_controller/camera_controller.tscn" id="2_xf6jl"]
 
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_ar2wi"]
-sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
-ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
-
-[sub_resource type="Sky" id="Sky_xf6jl"]
-sky_material = SubResource("ProceduralSkyMaterial_ar2wi")
-
-[sub_resource type="Environment" id="Environment_3vuvd"]
-background_mode = 2
-sky = SubResource("Sky_xf6jl")
-tonemap_mode = 2
-glow_enabled = true
-
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_m0cg8"]
 radius = 0.35
 
@@ -28,9 +15,6 @@ radius = 0.35
 [node name="FirstPersonController" type="CharacterBody3D" unique_id=2102967226]
 collision_layer = 2
 script = ExtResource("1_4xhjy")
-
-[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=897598330]
-environment = SubResource("Environment_3vuvd")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1628079843]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)

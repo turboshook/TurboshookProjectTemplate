@@ -250,7 +250,7 @@ func _get_blacklisted_function(expression_text: String) -> String:
 			return function
 	return ""
 
-func _scroll_output(scroll_direction: int) -> void:
+func scroll_output(scroll_direction: int) -> void:
 	# return if no resizing due to text
 	if _console_output.size.y <= _console_output_max_height: return
 	_console_output.position.y += OUTPUT_SCROLL_INCREMENT * scroll_direction

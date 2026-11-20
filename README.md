@@ -49,7 +49,6 @@ The following additions have been made to the built-in UI inputs:
 - `VectorAdjustManager`: Can be used to snap Vector2Ds to regular increments. Useful for forcing 8-way movement in top-down games, for example.
 - `WorldEventActivator3D`: Basis for a collision-based world event management system. 
 - `WorldOcclusionDetector`: A slightly more robust raycast manager that is intended to detect physical (detectable via physics collisions) obstructions occluding the parent scene from the current active `Camera3D` instance. This can be used with other visibility checks to implement SCP-173/Weeping Angel-style behavior.
-
 ## Sound
 - `SoundQueue`: Used to smoothly play multiple copies of a sound without cutting off a stream mid-playback.
 - `SoundPool`: Can play random `SoundQueue` instances.
